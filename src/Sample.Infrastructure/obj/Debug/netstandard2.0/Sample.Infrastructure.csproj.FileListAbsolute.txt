@@ -1,0 +1,12 @@
+C:\Source\SampleDomain\src\Sample.Infrastructure\bin\Debug\netstandard2.0\Sample.Infrastructure.deps.json
+C:\Source\SampleDomain\src\Sample.Infrastructure\bin\Debug\netstandard2.0\Sample.Infrastructure.dll
+C:\Source\SampleDomain\src\Sample.Infrastructure\bin\Debug\netstandard2.0\Sample.Infrastructure.pdb
+C:\Source\SampleDomain\src\Sample.Infrastructure\bin\Debug\netstandard2.0\Sample.Domain.dll
+C:\Source\SampleDomain\src\Sample.Infrastructure\bin\Debug\netstandard2.0\Sample.Domain.pdb
+C:\Source\SampleDomain\src\Sample.Infrastructure\obj\Debug\netstandard2.0\Sample.Infrastructure.csprojAssemblyReference.cache
+C:\Source\SampleDomain\src\Sample.Infrastructure\obj\Debug\netstandard2.0\Sample.Infrastructure.AssemblyInfoInputs.cache
+C:\Source\SampleDomain\src\Sample.Infrastructure\obj\Debug\netstandard2.0\Sample.Infrastructure.AssemblyInfo.cs
+C:\Source\SampleDomain\src\Sample.Infrastructure\obj\Debug\netstandard2.0\Sample.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Source\SampleDomain\src\Sample.Infrastructure\obj\Debug\netstandard2.0\Sample.Infrastructure.csproj.CopyComplete
+C:\Source\SampleDomain\src\Sample.Infrastructure\obj\Debug\netstandard2.0\Sample.Infrastructure.dll
+C:\Source\SampleDomain\src\Sample.Infrastructure\obj\Debug\netstandard2.0\Sample.Infrastructure.pdb
