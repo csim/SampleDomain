@@ -1,0 +1,17 @@
+C:\Source\SampleDomain\src\Sample.Infrastructure\obj\Debug\netcoreapp3.1\Sample.Infrastructure.csprojAssemblyReference.cache
+C:\Source\SampleDomain\src\Sample.Infrastructure\obj\Debug\netcoreapp3.1\Sample.Infrastructure.AssemblyInfoInputs.cache
+C:\Source\SampleDomain\src\Sample.Infrastructure\obj\Debug\netcoreapp3.1\Sample.Infrastructure.AssemblyInfo.cs
+C:\Source\SampleDomain\src\Sample.Infrastructure\obj\Debug\netcoreapp3.1\Sample.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Source\SampleDomain\src\Sample.Infrastructure\bin\Debug\netcoreapp3.1\Sample.Infrastructure.deps.json
+C:\Source\SampleDomain\src\Sample.Infrastructure\bin\Debug\netcoreapp3.1\Sample.Infrastructure.runtimeconfig.json
+C:\Source\SampleDomain\src\Sample.Infrastructure\bin\Debug\netcoreapp3.1\Sample.Infrastructure.runtimeconfig.dev.json
+C:\Source\SampleDomain\src\Sample.Infrastructure\bin\Debug\netcoreapp3.1\Sample.Infrastructure.dll
+C:\Source\SampleDomain\src\Sample.Infrastructure\bin\Debug\netcoreapp3.1\Sample.Infrastructure.pdb
+C:\Source\SampleDomain\src\Sample.Infrastructure\bin\Debug\netcoreapp3.1\Sample.Domain.dll
+C:\Source\SampleDomain\src\Sample.Infrastructure\bin\Debug\netcoreapp3.1\Sample.Shared.dll
+C:\Source\SampleDomain\src\Sample.Infrastructure\bin\Debug\netcoreapp3.1\Sample.Domain.pdb
+C:\Source\SampleDomain\src\Sample.Infrastructure\bin\Debug\netcoreapp3.1\Sample.Shared.pdb
+C:\Source\SampleDomain\src\Sample.Infrastructure\obj\Debug\netcoreapp3.1\Sample.Infrastructure.csproj.CopyComplete
+C:\Source\SampleDomain\src\Sample.Infrastructure\obj\Debug\netcoreapp3.1\Sample.Infrastructure.dll
+C:\Source\SampleDomain\src\Sample.Infrastructure\obj\Debug\netcoreapp3.1\Sample.Infrastructure.pdb
+C:\Source\SampleDomain\src\Sample.Infrastructure\obj\Debug\netcoreapp3.1\Sample.Infrastructure.genruntimeconfig.cache

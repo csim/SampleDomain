@@ -1,0 +1,9 @@
+C:\Source\SampleDomain\src\Sample.Shared\obj\Debug\netcoreapp3.1\Sample.Shared.csprojAssemblyReference.cache
+C:\Source\SampleDomain\src\Sample.Shared\obj\Debug\netcoreapp3.1\Sample.Shared.AssemblyInfoInputs.cache
+C:\Source\SampleDomain\src\Sample.Shared\obj\Debug\netcoreapp3.1\Sample.Shared.AssemblyInfo.cs
+C:\Source\SampleDomain\src\Sample.Shared\obj\Debug\netcoreapp3.1\Sample.Shared.csproj.CoreCompileInputs.cache
+C:\Source\SampleDomain\src\Sample.Shared\bin\Debug\netcoreapp3.1\Sample.Shared.deps.json
+C:\Source\SampleDomain\src\Sample.Shared\bin\Debug\netcoreapp3.1\Sample.Shared.dll
+C:\Source\SampleDomain\src\Sample.Shared\bin\Debug\netcoreapp3.1\Sample.Shared.pdb
+C:\Source\SampleDomain\src\Sample.Shared\obj\Debug\netcoreapp3.1\Sample.Shared.dll
+C:\Source\SampleDomain\src\Sample.Shared\obj\Debug\netcoreapp3.1\Sample.Shared.pdb
