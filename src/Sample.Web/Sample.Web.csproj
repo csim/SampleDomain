@@ -14,8 +14,8 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Sample.Domain\Sample.Domain.csproj" />
-        <ProjectReference Include="..\Sample.Infrastructure\Sample.Infrastructure.csproj" />
-        <ProjectReference Include="..\Sample.Shared\Sample.Shared.csproj" />
+        <ProjectReference Include="..\Sample.Shared.Abstractions\Sample.Shared.Abstractions.csproj" />
+        <ProjectReference Include="..\Sample.Shared.Infrastructure\Sample.Shared.Infrastructure.csproj" />
     </ItemGroup>
 
 

@@ -1,9 +1,9 @@
 ﻿namespace Sample.Domain.Entities
 {
     using Sample.Domain.Events;
-    using Sample.Shared;
+    using Sample.Shared.Abstractions;
 
-    public class ToDoItem : EntityBase
+    public class ToDoItem : RecordBase
     {
         public string Description { get; set; }
 

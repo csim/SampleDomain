@@ -2,6 +2,7 @@
 {
     using Sample.Domain.Entities;
     using Sample.Shared;
+    using Sample.Shared.Abstractions;
 
     public class ToDoItemCompletedEvent : EventBase
     {

@@ -1,9 +1,0 @@
-C:\Source\SampleDomain\src\Sample.Domain\bin\Debug\netstandard2.0\Sample.Domain.deps.json
-C:\Source\SampleDomain\src\Sample.Domain\bin\Debug\netstandard2.0\Sample.Domain.dll
-C:\Source\SampleDomain\src\Sample.Domain\bin\Debug\netstandard2.0\Sample.Domain.pdb
-C:\Source\SampleDomain\src\Sample.Domain\obj\Debug\netstandard2.0\Sample.Domain.csprojAssemblyReference.cache
-C:\Source\SampleDomain\src\Sample.Domain\obj\Debug\netstandard2.0\Sample.Domain.AssemblyInfoInputs.cache
-C:\Source\SampleDomain\src\Sample.Domain\obj\Debug\netstandard2.0\Sample.Domain.AssemblyInfo.cs
-C:\Source\SampleDomain\src\Sample.Domain\obj\Debug\netstandard2.0\Sample.Domain.csproj.CoreCompileInputs.cache
-C:\Source\SampleDomain\src\Sample.Domain\obj\Debug\netstandard2.0\Sample.Domain.dll
-C:\Source\SampleDomain\src\Sample.Domain\obj\Debug\netstandard2.0\Sample.Domain.pdb
