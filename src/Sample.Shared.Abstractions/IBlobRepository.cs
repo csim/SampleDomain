@@ -21,9 +21,9 @@ namespace Sample.Shared.Abstractions
 		StorageBlobContainerInfo ContainerInfo(string name);
 
 
-		bool DeleteBlob(string containerName, string fileName);
+		void DeleteBlob(string containerName, string fileName);
 
-		Task<bool> DeleteBlobAsync(string containerName, string fileName);
+		Task DeleteBlobAsync(string containerName, string fileName);
 
 		StorageBlobContainerInfo EnsureContainer(string containerName, bool setPublicAccessType = false);
 

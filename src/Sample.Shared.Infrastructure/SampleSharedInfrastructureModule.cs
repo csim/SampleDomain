@@ -47,9 +47,10 @@
             }
 
 
-            if (options.BlobRespositoryDatabaseMode == BlobRespositoryDatabaseMode.AzureStorage)
+            if (options.BlobRespositoryMode == BlobRespositoryMode.AzureStorage)
             {
                 services
+                    .AddScoped<AzureStorageBlobRepository>()
                     .AddScoped<IBlobRepository, AzureStorageBlobRepository>(
                         serviceProvider =>
                         {
@@ -58,9 +59,20 @@
                             return instance;
                         });
             }
+            else if (options.BlobRespositoryMode == BlobRespositoryMode.FileSystem)
+            {
+                services
+                    .AddScoped<FileSystemBlobRepository>()
+                    .AddScoped<IBlobRepository, FileSystemBlobRepository>(
+                        serviceProvider =>
+                        {
+                            var instance = serviceProvider.GetRequiredService<FileSystemBlobRepository>();
+                            instance.SetBasePath(options.FileSystemBlobBasePath);
+                            return instance;
+                        });
+            }
 
             return services
-                .AddScoped<AzureStorageBlobRepository>()
                 .AddSingleton(options);
         }
     }

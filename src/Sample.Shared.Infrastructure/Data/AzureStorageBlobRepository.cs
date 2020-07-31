@@ -1,4 +1,4 @@
-﻿namespace Sample.Shared.Infrastructure
+﻿namespace Sample.Shared.Infrastructure.Data
 {
     using System;
     using System.Collections.Generic;
@@ -144,24 +144,24 @@
             }
         }
 
-        public bool DeleteBlob(string containerName, string fileName)
+        public void DeleteBlob(string containerName, string fileName)
         {
             if (string.IsNullOrEmpty(containerName)) throw new ArgumentException("Value cannot be null or empty.", nameof(containerName));
             if (string.IsNullOrEmpty(fileName)) throw new ArgumentException("Value cannot be null or empty.", nameof(fileName));
 
             var container = Client.GetContainerReference(containerName);
             var blob = container.GetBlockBlobReference(fileName);
-            return blob.DeleteIfExists();
+            blob.Delete();
         }
 
-        public async Task<bool> DeleteBlobAsync(string containerName, string fileName)
+        public async Task DeleteBlobAsync(string containerName, string fileName)
         {
             if (string.IsNullOrEmpty(containerName)) throw new ArgumentException("Value cannot be null or empty.", nameof(containerName));
             if (string.IsNullOrEmpty(fileName)) throw new ArgumentException("Value cannot be null or empty.", nameof(fileName));
 
             var container = Client.GetContainerReference(containerName);
             var blob = container.GetBlockBlobReference(fileName);
-            return await blob.DeleteIfExistsAsync();
+            await blob.DeleteAsync();
         }
 
         public bool DeleteContainer(string name)

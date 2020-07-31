@@ -4,9 +4,11 @@
     {
         public string AzureStorageAccountConnection { get; set; } = "UseDevelopmentStorage=true";
 
-        public BlobRespositoryDatabaseMode BlobRespositoryDatabaseMode { get; set; } = BlobRespositoryDatabaseMode.AzureStorage;
+        public BlobRespositoryMode BlobRespositoryMode { get; set; } = BlobRespositoryMode.FileSystem;
 
         public CosmosConnectionInfo CosmosConnection { get; set; } = new CosmosConnectionInfo();
+
+        public string FileSystemBlobBasePath { get; set; } = @"c:\blob";
 
         public RecordRepositoryMode RecordRepositoryMode { get; set; } = RecordRepositoryMode.Cosmos;
 
@@ -29,8 +31,9 @@
         Cosmos
     }
 
-    public enum BlobRespositoryDatabaseMode
+    public enum BlobRespositoryMode
     {
-        AzureStorage
+        AzureStorage,
+        FileSystem
     }
 }
