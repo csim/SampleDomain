@@ -1,16 +1,15 @@
 ﻿namespace Sample.Domain.Events
 {
-    using Sample.Domain.Entities;
-    using Sample.Shared;
+    using Sample.Domain.Records;
     using Sample.Shared.Abstractions;
 
     public class ToDoItemCompletedEvent : EventBase
     {
-        public ToDoItemCompletedEvent(ToDoItem completedItem)
+        public ToDoItemCompletedEvent(ToDoItemRecord completedItem)
         {
             CompletedItem = completedItem;
         }
 
-        public ToDoItem CompletedItem { get; set; }
+        public ToDoItemRecord CompletedItem { get; set; }
     }
 }

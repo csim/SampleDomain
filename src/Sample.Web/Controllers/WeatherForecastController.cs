@@ -1,38 +1,64 @@
 ﻿namespace Sample.Web.Controllers
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
+    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
+    using Sample.Domain.Records;
+    using Sample.Shared.Abstractions;
 
     [ApiController]
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IRecordRepository recordRepository)
         {
             _logger = logger;
+            _recordRepository = recordRepository;
         }
 
-        private static readonly string[] Summaries =
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
+        //private static readonly string[] _summaries =
+        //{
+        //    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+        //};
 
         private readonly ILogger<WeatherForecastController> _logger;
+        private readonly IRecordRepository _recordRepository;
 
         [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        public async Task<object> Get()
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5)
-                .Select(
-                    index => new WeatherForecast
-                    {
-                        Date = DateTime.Now.AddDays(index), TemperatureC = rng.Next(-20, 55), Summary = Summaries[rng.Next(Summaries.Length)]
-                    })
-                .ToArray();
+            await _recordRepository
+                .AddAsync(new ToDoItemRecord
+                {
+                    PartitionKey = Guid.Empty.ToString(),
+                    Description = $"test {DateTime.UtcNow}"
+                });
+
+            await _recordRepository
+                .AddAsync(new ToDoItemRecord
+                {
+                    PartitionKey = Guid.Empty.ToString(),
+                    Description = $"test {DateTime.UtcNow}"
+                });
+
+            await _recordRepository
+                .AddAsync(new ToDoItemRecord
+                {
+                    PartitionKey = Guid.NewGuid().ToString(),
+                    Description = $"test {DateTime.UtcNow}"
+                });
+
+            return true;
+
+            //var rng = new Random();
+            //return Enumerable.Range(1, 5)
+            //    .Select(
+            //        index => new WeatherForecast
+            //        {
+            //            Date = DateTime.Now.AddDays(index), TemperatureC = rng.Next(-20, 55), Summary = Summaries[rng.Next(Summaries.Length)]
+            //        })
+            //    .ToArray();
         }
     }
 }

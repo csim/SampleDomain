@@ -4,7 +4,7 @@
     using System.Threading.Tasks;
     using Ardalis.EFCore.Extensions;
     using Microsoft.EntityFrameworkCore;
-    using Sample.Domain.Entities;
+    using Sample.Domain.Records;
 
     public class AppDbContext : DbContext
     {
@@ -20,7 +20,7 @@
             //_mediator = mediator;
         }
 
-        public DbSet<ToDoItem> ToDoItems { get; set; }
+        public DbSet<ToDoItemRecord> ToDoItems { get; set; }
 
         public override int SaveChanges()
         {
@@ -56,6 +56,10 @@
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ToDoItemRecord>()
+                .ToContainer(nameof(ToDoItemRecord).Replace("Record", ""))
+                .HasPartitionKey(x => x.PartitionKey);
 
             modelBuilder.ApplyAllConfigurationsFromCurrentAssembly();
 

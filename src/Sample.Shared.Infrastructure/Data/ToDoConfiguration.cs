@@ -2,11 +2,11 @@
 {
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using Sample.Domain.Entities;
+    using Sample.Domain.Records;
 
-    public class ToDoConfiguration : IEntityTypeConfiguration<ToDoItem>
+    public class ToDoConfiguration : IEntityTypeConfiguration<ToDoItemRecord>
     {
-        public void Configure(EntityTypeBuilder<ToDoItem> builder)
+        public void Configure(EntityTypeBuilder<ToDoItemRecord> builder)
         {
             builder
                 .Property(t => t.Title)

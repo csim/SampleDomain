@@ -1,6 +1,6 @@
 ﻿namespace Sample.Shared.Infrastructure.Data
 {
-    using System.Collections.Generic;
+    using System;
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
@@ -15,45 +15,47 @@
 
         private readonly AppDbContext _dbContext;
 
-        public async Task<T> AddAsync<T>(T entity) where T : RecordBase
+        public async Task<T> AddAsync<T>(T record) where T : RecordBase
         {
-            await _dbContext.Set<T>().AddAsync(entity);
+            record.Id ??= Guid.NewGuid();
+
+            await _dbContext.Set<T>().AddAsync(record);
             await _dbContext.SaveChangesAsync();
 
-            return entity;
+            return record;
         }
 
-        public async Task DeleteAsync<T>(T entity) where T : RecordBase
+        public IQueryable<T> AsQueryable<T>() where T : RecordBase
         {
-            _dbContext.Set<T>().Remove(entity);
+            return _dbContext
+                .Set<T>()
+                .AsQueryable<T>();
+        }
+
+        public async Task DeleteAsync<T>(T record) where T : RecordBase
+        {
+            _dbContext.Set<T>().Remove(record);
 
             await _dbContext.SaveChangesAsync();
         }
 
-        public T GetById<T>(int id) where T : RecordBase
+        public T RetrieveId<T>(Guid id) where T : RecordBase
         {
             return _dbContext
                 .Set<T>()
                 .SingleOrDefault(e => e.Id == id);
         }
 
-        public Task<T> GetByIdAsync<T>(int id) where T : RecordBase
+        public Task<T> RetrieveIdAsync<T>(Guid id) where T : RecordBase
         {
             return _dbContext
                 .Set<T>()
                 .SingleOrDefaultAsync(e => e.Id == id);
         }
 
-        public Task<List<T>> ListAsync<T>() where T : RecordBase
+        public async Task UpdateAsync<T>(T record) where T : RecordBase
         {
-            return _dbContext
-                .Set<T>()
-                .ToListAsync();
-        }
-
-        public async Task UpdateAsync<T>(T entity) where T : RecordBase
-        {
-            _dbContext.Entry(entity).State = EntityState.Modified;
+            _dbContext.Entry(record).State = EntityState.Modified;
 
             await _dbContext.SaveChangesAsync();
         }
