@@ -13,6 +13,8 @@
         public virtual T Add<T>(T record) where T : RecordBase
         {
             record.Id ??= Guid.NewGuid();
+            record.CreatedOn ??= DateTime.UtcNow;
+            record.ModifiedOn ??= DateTime.UtcNow;
 
             DbContext
                 .Set<T>()
@@ -26,6 +28,8 @@
         public virtual async Task<T> AddAsync<T>(T record) where T : RecordBase
         {
             record.Id ??= Guid.NewGuid();
+            record.CreatedOn ??= DateTime.UtcNow;
+            record.ModifiedOn ??= DateTime.UtcNow;
 
             await DbContext
                 .Set<T>()

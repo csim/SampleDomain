@@ -32,28 +32,28 @@
             await _recordRepository
                 .AddAsync(new ToDoItemRecord
                 {
-                    PartitionKey = Guid.Empty.ToString(),
+                    PartitionKey = "cbaeb852-449b-4619-9618-006b8a063634",
                     Description = $"test {DateTime.UtcNow}"
                 });
 
-            await _recordRepository
-                .AddAsync(new ToDoItemRecord
-                {
-                    PartitionKey = Guid.Empty.ToString(),
-                    Description = $"test {DateTime.UtcNow}"
-                });
+            //await _recordRepository
+            //    .AddAsync(new ToDoItemRecord
+            //    {
+            //        PartitionKey = Guid.Empty.ToString(),
+            //        Description = $"test {DateTime.UtcNow}"
+            //    });
 
-            await _recordRepository
-                .AddAsync(new ToDoItemRecord
-                {
-                    PartitionKey = Guid.NewGuid().ToString(),
-                    Description = $"test {DateTime.UtcNow}"
-                });
+            //await _recordRepository
+            //    .AddAsync(new ToDoItemRecord
+            //    {
+            //        PartitionKey = Guid.NewGuid().ToString(),
+            //        Description = $"test {DateTime.UtcNow}"
+            //    });
 
             var items = _recordRepository
                 .AsQueryable<ToDoItemRecord>()
-                .Where(_ => _.PartitionKey != Guid.Empty.ToString())
-                .OrderByDescending(_ => _.Description)
+                .Where(_ => _.PartitionKey == "cbaeb852-449b-4619-9618-006b8a063634")
+                .OrderByDescending(_ => _.CreatedOn)
                 .ToList();
 
 
