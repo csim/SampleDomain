@@ -10,11 +10,27 @@
     {
         protected DbContext DbContext { get; set; }
 
+        public virtual T Add<T>(T record) where T : RecordBase
+        {
+            record.Id ??= Guid.NewGuid();
+
+            DbContext
+                .Set<T>()
+                .Add(record);
+
+            DbContext.SaveChanges();
+
+            return record;
+        }
+
         public virtual async Task<T> AddAsync<T>(T record) where T : RecordBase
         {
             record.Id ??= Guid.NewGuid();
 
-            await DbContext.Set<T>().AddAsync(record);
+            await DbContext
+                .Set<T>()
+                .AddAsync(record);
+
             await DbContext.SaveChangesAsync();
 
             return record;
@@ -29,7 +45,9 @@
 
         public virtual async Task DeleteAsync<T>(T record) where T : RecordBase
         {
-            DbContext.Set<T>().Remove(record);
+            DbContext
+                .Set<T>()
+                .Remove(record);
 
             await DbContext.SaveChangesAsync();
         }
@@ -46,6 +64,19 @@
             return DbContext
                 .Set<T>()
                 .SingleOrDefaultAsync(e => e.Id == id);
+        }
+
+        public virtual T Update<T>(T record) where T : RecordBase
+        {
+            record.Id ??= Guid.NewGuid();
+
+            DbContext
+                .Set<T>()
+                .Update(record);
+
+            DbContext.SaveChanges();
+
+            return record;
         }
 
         public virtual async Task UpdateAsync<T>(T record) where T : RecordBase

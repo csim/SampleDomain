@@ -5,8 +5,8 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Sample.Domain;
     using Sample.Shared.Infrastructure;
-    using Sample.Shared.Infrastructure.Data;
 
     public class Startup
     {
@@ -46,6 +46,7 @@
 
             services
                 .AddWeb(_configuration)
+                .AddDomain(_configuration)
                 .AddSharedInfrastructure(_configuration);
         }
     }

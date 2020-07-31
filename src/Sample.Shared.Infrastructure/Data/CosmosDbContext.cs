@@ -1,15 +1,10 @@
 ﻿namespace Sample.Shared.Infrastructure.Data
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using Ardalis.EFCore.Extensions;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.ChangeTracking;
-    using Microsoft.EntityFrameworkCore.Infrastructure;
-    using Microsoft.EntityFrameworkCore.Internal;
-    using Microsoft.EntityFrameworkCore.Metadata;
     using Sample.Domain.Records;
 
     public class CosmosDbContext : DbContext
@@ -27,11 +22,6 @@
         }
 
         public DbSet<ToDoItemRecord> ToDoItems { get; set; }
-
-        public override int SaveChanges()
-        {
-            return SaveChangesAsync().GetAwaiter().GetResult();
-        }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
@@ -63,18 +53,19 @@
         {
             base.OnModelCreating(modelBuilder);
 
-            var records = new[]
-            {
-                typeof(ToDoItemRecord) 
-            };
+            var records = new[] { typeof(ToDoItemRecord) };
 
-            foreach (var recordType in records)
+            foreach (var recordType in SampleSharedInfrastructureModule.RecordTypes)
             {
                 modelBuilder
                     .Entity(recordType)
                     .ToContainer(recordType.Name.Replace("Record", ""))
                     .HasPartitionKey("PartitionKey");
             }
+
+            modelBuilder
+                .Entity<ToDoItemRecord>()
+                .Ignore(_ => _.Events);
 
             modelBuilder.ApplyAllConfigurationsFromCurrentAssembly();
 

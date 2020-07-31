@@ -4,17 +4,13 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Sample.Domain.Records;
     using Sample.Shared.Abstractions;
     using Sample.Shared.Infrastructure.Data;
 
     public static class SampleSharedInfrastructureModule
     {
-
-        public static void UseSharedInfrastructure()
-        {
-
-            //context.Database.Migrate();
-        }
+        public static readonly Type[] RecordTypes = { typeof(ToDoItemRecord) };
 
         public static IServiceCollection AddSharedInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
@@ -30,24 +26,41 @@
 
         public static IServiceCollection AddSharedInfrastructure(this IServiceCollection services, SampleSharedInfrastructureOptions options)
         {
-            if (options.RecordDatabaseType == RecordDatabaseType.SqlLite)
+            if (options.RecordRepositoryMode == RecordRepositoryMode.SqlLite)
             {
                 services
-                    .AddDbContext<CosmosDbContext>(o => o.UseSqlite(options.RecordDatabaseConnection));
+                    .AddDbContext<CosmosDbContext>(o => o.UseSqlite(options.SqlLiteConnection));
             }
-            else if (options.RecordDatabaseType == RecordDatabaseType.Cosmos)
+            else if (options.RecordRepositoryMode == RecordRepositoryMode.Cosmos)
             {
                 services
-                    .AddDbContext<CosmosDbContext>(o => o.UseCosmos("https://localhost:8081", "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==", "Sample"))
-                    .AddScoped<CosmosDbContext>()
+                    .AddDbContext<CosmosDbContext>(
+                        o => o.UseCosmos(
+                            options.CosmosConnection.AccountEndpoint,
+                            options.CosmosConnection.AccountKey,
+                            options.CosmosConnection.DatabaseName))
                     .AddScoped<IRecordRepository, CosmosRecordRepository>();
             }
             else
             {
-                throw new ApplicationException($"Unknown RecordDatabaseType ({options.RecordDatabaseType})");
+                throw new ApplicationException($"Unknown RecordDatabaseType ({options.RecordRepositoryMode})");
+            }
+
+
+            if (options.BlobRespositoryDatabaseMode == BlobRespositoryDatabaseMode.AzureStorage)
+            {
+                services
+                    .AddScoped<IBlobRepository, AzureStorageBlobRepository>(
+                        serviceProvider =>
+                        {
+                            var instance = serviceProvider.GetRequiredService<AzureStorageBlobRepository>();
+                            instance.SetConnection(options.AzureStorageAccountConnection);
+                            return instance;
+                        });
             }
 
             return services
+                .AddScoped<AzureStorageBlobRepository>()
                 .AddSingleton(options);
         }
     }
