@@ -1,6 +1,7 @@
 ﻿namespace Sample.Web.Controllers
 {
     using System;
+    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
@@ -49,7 +50,14 @@
                     Description = $"test {DateTime.UtcNow}"
                 });
 
-            return true;
+            var items = _recordRepository
+                .AsQueryable<ToDoItemRecord>()
+                .Where(_ => _.PartitionKey != Guid.Empty.ToString())
+                .OrderByDescending(_ => _.Description)
+                .ToList();
+
+
+            return items;
 
             //var rng = new Random();
             //return Enumerable.Range(1, 5)

@@ -1,7 +1,6 @@
 ﻿namespace Sample.Web
 {
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Sample.Shared.Infrastructure.Data;
@@ -15,11 +14,12 @@
                     webBuilder =>
                     {
                         webBuilder.UseStartup<Startup>();
-                    }).Build();
+                    })
+                .Build();
 
             using (var serviceScope = host.Services.CreateScope())
             {
-                var context = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
+                var context = serviceScope.ServiceProvider.GetRequiredService<CosmosDbContext>();
                 context.Database.EnsureCreated();
             }
 

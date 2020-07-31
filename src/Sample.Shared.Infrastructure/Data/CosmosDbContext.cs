@@ -1,12 +1,18 @@
 ﻿namespace Sample.Shared.Infrastructure.Data
 {
+    using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using Ardalis.EFCore.Extensions;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.ChangeTracking;
+    using Microsoft.EntityFrameworkCore.Infrastructure;
+    using Microsoft.EntityFrameworkCore.Internal;
+    using Microsoft.EntityFrameworkCore.Metadata;
     using Sample.Domain.Records;
 
-    public class AppDbContext : DbContext
+    public class CosmosDbContext : DbContext
     {
         //private readonly IMediator _mediator;
 
@@ -14,7 +20,7 @@
         //{
         //}
 
-        public AppDbContext(DbContextOptions<AppDbContext> options) //, IMediator mediator)
+        public CosmosDbContext(DbContextOptions<CosmosDbContext> options) //, IMediator mediator)
             : base(options)
         {
             //_mediator = mediator;
@@ -57,9 +63,18 @@
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<ToDoItemRecord>()
-                .ToContainer(nameof(ToDoItemRecord).Replace("Record", ""))
-                .HasPartitionKey(x => x.PartitionKey);
+            var records = new[]
+            {
+                typeof(ToDoItemRecord) 
+            };
+
+            foreach (var recordType in records)
+            {
+                modelBuilder
+                    .Entity(recordType)
+                    .ToContainer(recordType.Name.Replace("Record", ""))
+                    .HasPartitionKey("PartitionKey");
+            }
 
             modelBuilder.ApplyAllConfigurationsFromCurrentAssembly();
 

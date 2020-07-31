@@ -12,7 +12,7 @@
 
         IQueryable<T> AsQueryable<T>() where T : RecordBase;
 
-        Task<T> RetrieveIdAsync<T>(Guid id) where T : RecordBase;
+        Task<T> RetrieveAsync<T>(Guid id) where T : RecordBase;
 
         Task UpdateAsync<T>(T record) where T : RecordBase;
     }

@@ -33,12 +33,14 @@
             if (options.RecordDatabaseType == RecordDatabaseType.SqlLite)
             {
                 services
-                    .AddDbContext<AppDbContext>(o => o.UseSqlite(options.RecordDatabaseConnection));
+                    .AddDbContext<CosmosDbContext>(o => o.UseSqlite(options.RecordDatabaseConnection));
             }
             else if (options.RecordDatabaseType == RecordDatabaseType.Cosmos)
             {
                 services
-                    .AddDbContext<AppDbContext>(o => o.UseCosmos("https://localhost:8081", "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==", "Sample"));
+                    .AddDbContext<CosmosDbContext>(o => o.UseCosmos("https://localhost:8081", "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==", "Sample"))
+                    .AddScoped<CosmosDbContext>()
+                    .AddScoped<IRecordRepository, CosmosRecordRepository>();
             }
             else
             {
@@ -46,8 +48,6 @@
             }
 
             return services
-                .AddScoped<IRecordRepository, RecordRepository>()
-                .AddScoped<AppDbContext>()
                 .AddSingleton(options);
         }
     }
