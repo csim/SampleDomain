@@ -50,7 +50,7 @@
             await _blobRepository.ReadBlobAsStringAsync(containerName, filename);
             //await _blobRepository.DeleteBlobAsync(containerName, filename);
 
-            return true;
+            return await _blobRepository.BlobInfoAsync(containerName, filename);
 
             //await _recordRepository
             //    .AddAsync(new ToDoItemRecord

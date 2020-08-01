@@ -31,7 +31,7 @@
 
         Stream ReadBlobAsStream(string containerName, string fileName);
 
-        Task<MemoryStream> ReadBlobAsStreamAsync(string containerName, string fileName);
+        Task<Stream> ReadBlobAsStreamAsync(string containerName, string fileName);
 
         string ReadBlobAsString(string containerName, string fileName, Encoding encoding = null);
 

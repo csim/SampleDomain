@@ -28,7 +28,7 @@
 
         public StorageBlobInfo BlobInfo(string containerName, string fileName)
         {
-            throw new NotImplementedException();
+            return BlobInfoAsync(containerName, fileName).GetAwaiter().GetResult();
         }
 
         public Task<StorageBlobInfo> BlobInfoAsync(string containerName, string fileName)
@@ -36,7 +36,20 @@
             if (string.IsNullOrEmpty(containerName)) throw new ArgumentException("Value cannot be null or empty.", nameof(containerName));
             if (string.IsNullOrEmpty(fileName)) throw new ArgumentException("Value cannot be null or empty.", nameof(fileName));
 
-            throw new NotImplementedException();
+            var filePath = FilePath(containerName, fileName);
+            var fileInfo = new FileInfo(filePath);
+
+            var ret = new StorageBlobInfo
+            {
+                Container = new StorageBlobContainerInfo { Name = containerName, Uri = new Uri($"file://{containerName}") },
+                ContentType = MimeMapping.MimeUtility.GetMimeMapping(fileName),
+                Filename = fileName,
+                Size = fileInfo.Length,
+                Uri = new Uri($"file://{containerName}/{fileName}"),
+                AbsoluteUri = $"file://{containerName}/{fileName}"
+            };
+
+            return Task.FromResult(ret);
         }
 
         public StorageBlobContainerInfo ContainerInfo(string name)
@@ -95,20 +108,23 @@
 
         public byte[] ReadBlob(string containerName, string fileName)
         {
-            throw new NotImplementedException();
+            return ReadBlobAsync(containerName, fileName).GetAwaiter().GetResult();
         }
 
         public Stream ReadBlobAsStream(string containerName, string fileName)
         {
-            throw new NotImplementedException();
+            return ReadBlobAsStreamAsync(containerName, fileName).GetAwaiter().GetResult();
         }
 
-        public Task<MemoryStream> ReadBlobAsStreamAsync(string containerName, string fileName)
+        public Task<Stream> ReadBlobAsStreamAsync(string containerName, string fileName)
         {
             if (string.IsNullOrEmpty(containerName)) throw new ArgumentException("Value cannot be null or empty.", nameof(containerName));
             if (string.IsNullOrEmpty(fileName)) throw new ArgumentException("Value cannot be null or empty.", nameof(fileName));
 
-            throw new NotImplementedException();
+            var filePath = FilePath(containerName, fileName);
+            if (!File.Exists(filePath)) throw new ApplicationException($"File does not exists ({fileName})");
+
+            return Task.FromResult((Stream)File.OpenRead(filePath));
         }
 
         public string ReadBlobAsString(string containerName, string fileName, Encoding encoding = null)
@@ -132,7 +148,13 @@
 
         public Task<byte[]> ReadBlobAsync(string containerName, string fileName)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(containerName)) throw new ArgumentException("Value cannot be null or empty.", nameof(containerName));
+            if (string.IsNullOrEmpty(fileName)) throw new ArgumentException("Value cannot be null or empty.", nameof(fileName));
+
+            var filePath = FilePath(containerName, fileName);
+            if (!File.Exists(filePath)) throw new ApplicationException($"File does not exists ({fileName})");
+
+            return Task.FromResult(File.ReadAllBytes(filePath));
         }
 
         public void SetBasePath(string basePath)

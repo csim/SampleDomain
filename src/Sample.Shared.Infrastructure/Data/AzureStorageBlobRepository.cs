@@ -278,7 +278,7 @@
             return blob.OpenRead();
         }
 
-        public async Task<MemoryStream> ReadBlobAsStreamAsync(string containerName, string fileName)
+        public async Task<Stream> ReadBlobAsStreamAsync(string containerName, string fileName)
         {
             if (string.IsNullOrEmpty(containerName)) throw new ArgumentException("Value cannot be null or empty.", nameof(containerName));
             if (string.IsNullOrEmpty(fileName)) throw new ArgumentException("Value cannot be null or empty.", nameof(fileName));
@@ -311,7 +311,10 @@
         public async Task<byte[]> ReadBlobAsync(string containerName, string fileName)
         {
             await using var stream = await ReadBlobAsStreamAsync(containerName, fileName);
-            return stream.ToArray();
+            await using var memoryStream = new MemoryStream();
+            await stream.CopyToAsync(memoryStream);
+
+            return memoryStream.ToArray();
         }
 
         public void SetConnection(string connectionString)
