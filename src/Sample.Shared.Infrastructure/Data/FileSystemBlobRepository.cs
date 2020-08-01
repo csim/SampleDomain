@@ -4,6 +4,7 @@
     using System.IO;
     using System.Text;
     using System.Threading.Tasks;
+    using MimeMapping;
     using Sample.Shared.Abstractions;
 
     public class FileSystemBlobRepository : IBlobRepository
@@ -42,7 +43,7 @@
             var ret = new StorageBlobInfo
             {
                 Container = new StorageBlobContainerInfo { Name = containerName, Uri = new Uri($"file://{containerName}") },
-                ContentType = MimeMapping.MimeUtility.GetMimeMapping(fileName),
+                ContentType = MimeUtility.GetMimeMapping(fileName),
                 Filename = fileName,
                 Size = fileInfo.Length,
                 Uri = new Uri($"file://{containerName}/{fileName}"),
