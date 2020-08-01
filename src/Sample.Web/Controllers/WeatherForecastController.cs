@@ -32,12 +32,11 @@
         [HttpGet]
         public async Task<object> Get()
         {
-            await _blobRepository.EnsureContainerAsync("container1");
-
+            var containerName = "container2";
+            await _blobRepository.EnsureContainerAsync(containerName);
 
             var g = Guid.NewGuid();
 
-            var containerName = "container1";
             var filename = $"{g}/x1/File_{DateTime.UtcNow.Ticks}.txt";
             var filename2 = $"{g}/x1/File_{DateTime.UtcNow.Ticks}.txt";
 
