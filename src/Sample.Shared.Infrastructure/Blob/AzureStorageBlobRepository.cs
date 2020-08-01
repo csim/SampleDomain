@@ -1,4 +1,4 @@
-﻿namespace Sample.Shared.Infrastructure.Data
+﻿namespace Sample.Shared.Infrastructure.Blob
 {
     using System;
     using System.Collections.Generic;

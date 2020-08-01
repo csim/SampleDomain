@@ -1,6 +1,5 @@
 ﻿namespace Sample.Shared.Infrastructure.Data
 {
-    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using Ardalis.EFCore.Extensions;
@@ -52,8 +51,6 @@
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            var records = new[] { typeof(ToDoItemRecord) };
 
             foreach (var recordType in SampleSharedInfrastructureModule.RecordTypes)
             {

@@ -1,4 +1,4 @@
-﻿namespace Sample.Shared.Infrastructure.Data
+﻿namespace Sample.Shared.Infrastructure.Blob
 {
     using System;
     using System.IO;
@@ -73,17 +73,20 @@
             var filePath = FilePath(containerName, fileName);
             File.Delete(filePath);
 
-            var parentPath = Directory.GetParent(filePath).FullName;
+            var dir = Directory.GetParent(filePath);
+            var dirFullName = dir.FullName;
 
             while (true)
             {
-                if (parentPath.EndsWith(containerName)) break;
+                if (string.Equals(dir.Name, containerName, StringComparison.CurrentCultureIgnoreCase)) break;
+                if (string.Equals(dir.FullName, _basePath, StringComparison.CurrentCultureIgnoreCase)) break;
 
-                var fileCount = Directory.GetFiles(parentPath).Length;
-                var dirCount = Directory.GetDirectories(parentPath).Length;
-                if (fileCount == 0 && dirCount == 0) Directory.Delete(parentPath);
+                var fileCount = Directory.GetFiles(dirFullName).Length;
+                var dirCount = Directory.GetDirectories(dirFullName).Length;
+                if (fileCount == 0 && dirCount == 0) Directory.Delete(dirFullName);
 
-                parentPath = Directory.GetParent(parentPath).FullName;
+                dir = Directory.GetParent(dir.FullName);
+                dirFullName = dir.FullName;
             }
 
             return Task.FromResult(true);

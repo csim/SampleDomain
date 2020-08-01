@@ -1,9 +1,7 @@
 ﻿namespace Sample.Domain
 {
-    using System;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Sample.Shared.Abstractions;
 
     public static class SampleDomainModule
     {

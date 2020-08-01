@@ -1,24 +1,26 @@
 ﻿namespace Sample.Web.Controllers
 {
     using System;
-    using System.Linq;
-    using System.Text;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
-    using Sample.Domain.Records;
     using Sample.Shared.Abstractions;
 
     [ApiController]
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
-        public WeatherForecastController(ILogger<WeatherForecastController> logger, IRecordRepository recordRepository, IBlobRepository blobRepository)
+        public WeatherForecastController(
+            ILogger<WeatherForecastController> logger,
+            IRecordRepository recordRepository,
+            IBlobRepository blobRepository)
         {
             _logger = logger;
             _recordRepository = recordRepository;
             _blobRepository = blobRepository;
         }
+
+        private readonly IBlobRepository _blobRepository;
 
         //private static readonly string[] _summaries =
         //{
@@ -27,7 +29,6 @@
 
         private readonly ILogger<WeatherForecastController> _logger;
         private readonly IRecordRepository _recordRepository;
-        private readonly IBlobRepository _blobRepository;
 
         [HttpGet]
         public async Task<object> Get()
@@ -38,18 +39,20 @@
             var g = Guid.NewGuid();
 
             var filename = $"{g}/x1/File_{DateTime.UtcNow.Ticks}.txt";
-            var filename2 = $"{g}/x1/File_{DateTime.UtcNow.Ticks}.txt";
+            var filename2 = $"{g}/x2/File_{DateTime.UtcNow.Ticks}.txt";
 
             //var content = Encoding.UTF8.GetBytes($"testc: {DateTime.UtcNow}".ToCharArray());
             var content = $"testc: {DateTime.UtcNow}";
-            
+
             await _blobRepository.WriteBlobAsync(containerName, filename, content, overwrite: true);
             await _blobRepository.WriteBlobAsync(containerName, filename2, content, overwrite: true);
 
-            await _blobRepository.ReadBlobAsStringAsync(containerName, filename);
-            //await _blobRepository.DeleteBlobAsync(containerName, filename);
+            //await _blobRepository.ReadBlobAsStringAsync(containerName, filename);
+            await _blobRepository.DeleteBlobAsync(containerName, filename);
 
-            return await _blobRepository.BlobInfoAsync(containerName, filename);
+            return true; 
+
+            //return await _blobRepository.BlobInfoAsync(containerName, filename);
 
             //await _recordRepository
             //    .AddAsync(new ToDoItemRecord

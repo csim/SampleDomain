@@ -6,6 +6,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using Sample.Domain.Records;
     using Sample.Shared.Abstractions;
+    using Sample.Shared.Infrastructure.Blob;
     using Sample.Shared.Infrastructure.Data;
 
     public static class SampleSharedInfrastructureModule
