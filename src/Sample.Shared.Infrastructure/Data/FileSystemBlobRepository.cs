@@ -26,12 +26,12 @@
             return Task.FromResult(ret);
         }
 
-        public StorageBlobInfo BlobInfo(string containerName, string fileName, bool includeExtendedProperties = false)
+        public StorageBlobInfo BlobInfo(string containerName, string fileName)
         {
             throw new NotImplementedException();
         }
 
-        public Task<StorageBlobInfo> BlobInfoAsync(string containerName, string fileName, bool includeExtendedProperties = false)
+        public Task<StorageBlobInfo> BlobInfoAsync(string containerName, string fileName)
         {
             if (string.IsNullOrEmpty(containerName)) throw new ArgumentException("Value cannot be null or empty.", nameof(containerName));
             if (string.IsNullOrEmpty(fileName)) throw new ArgumentException("Value cannot be null or empty.", nameof(fileName));
@@ -75,12 +75,12 @@
             return Task.FromResult(true);
         }
 
-        public StorageBlobContainerInfo EnsureContainer(string containerName, bool setPublicAccessType = false)
+        public StorageBlobContainerInfo EnsureContainer(string containerName)
         {
-            return EnsureContainerAsync(containerName, setPublicAccessType).GetAwaiter().GetResult();
+            return EnsureContainerAsync(containerName).GetAwaiter().GetResult();
         }
 
-        public Task<StorageBlobContainerInfo> EnsureContainerAsync(string containerName, bool setPublicAccessType = false)
+        public Task<StorageBlobContainerInfo> EnsureContainerAsync(string containerName)
         {
             if (string.IsNullOrEmpty(containerName)) throw new ArgumentException("Value cannot be null or empty.", nameof(containerName));
 

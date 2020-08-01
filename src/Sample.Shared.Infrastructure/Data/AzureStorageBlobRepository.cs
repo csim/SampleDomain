@@ -52,7 +52,7 @@
             return await blob.ExistsAsync();
         }
 
-        public StorageBlobInfo BlobInfo(string containerName, string fileName, bool includeExtendedProperties = false)
+        public StorageBlobInfo BlobInfo(string containerName, string fileName)
         {
             if (string.IsNullOrEmpty(containerName)) throw new ArgumentException("Value cannot be null or empty.", nameof(containerName));
             if (string.IsNullOrEmpty(fileName)) throw new ArgumentException("Value cannot be null or empty.", nameof(fileName));
@@ -63,10 +63,10 @@
             var blob = container.GetBlockBlobReference(fileName);
             if (blob == null || !blob.Exists()) return null;
 
-            return BlobInfo(container, blob, includeExtendedProperties);
+            return BlobInfo(container, blob);
         }
 
-        public async Task<StorageBlobInfo> BlobInfoAsync(string containerName, string fileName, bool includeExtendedProperties = false)
+        public async Task<StorageBlobInfo> BlobInfoAsync(string containerName, string fileName)
         {
             if (string.IsNullOrEmpty(containerName)) throw new ArgumentException("Value cannot be null or empty.", nameof(containerName));
             if (string.IsNullOrEmpty(fileName)) throw new ArgumentException("Value cannot be null or empty.", nameof(fileName));
@@ -77,7 +77,7 @@
             var blob = container.GetBlockBlobReference(fileName);
             if (!await blob.ExistsAsync()) return null;
 
-            return BlobInfo(container, blob, includeExtendedProperties);
+            return BlobInfo(container, blob);
         }
 
         public StorageBlobContainerInfo ContainerInfo(string name)
@@ -180,38 +180,24 @@
             return await container.DeleteIfExistsAsync();
         }
 
-        public StorageBlobContainerInfo EnsureContainer(string containerName, bool allowPublicAccess = false)
+        public StorageBlobContainerInfo EnsureContainer(string containerName)
         {
             if (string.IsNullOrEmpty(containerName)) throw new ArgumentException("Value cannot be null or empty.", nameof(containerName));
 
             var container = Client.GetContainerReference(containerName);
 
-            if (allowPublicAccess)
-            {
-                container.CreateIfNotExists(BlobContainerPublicAccessType.Blob);
-            }
-            else
-            {
-                container.CreateIfNotExists();
-            }
+            container.CreateIfNotExists();
 
             return ContainerInfo(container);
         }
 
-        public async Task<StorageBlobContainerInfo> EnsureContainerAsync(string containerName, bool allowPublicAccess = false)
+        public async Task<StorageBlobContainerInfo> EnsureContainerAsync(string containerName)
         {
             if (string.IsNullOrEmpty(containerName)) throw new ArgumentException("Value cannot be null or empty.", nameof(containerName));
 
             var container = Client.GetContainerReference(containerName);
 
-            if (allowPublicAccess)
-            {
-                await container.CreateIfNotExistsAsync(BlobContainerPublicAccessType.Blob, null, null);
-            }
-            else
-            {
-                await container.CreateIfNotExistsAsync();
-            }
+            await container.CreateIfNotExistsAsync();
 
             return ContainerInfo(container);
         }
@@ -220,8 +206,7 @@
             string containerName,
             string prefix = null,
             int take = 1000,
-            string continuationToken = null,
-            bool includeExtendedProperties = false)
+            string continuationToken = null)
         {
             if (string.IsNullOrEmpty(containerName)) throw new ArgumentException("Value cannot be null or empty.", nameof(containerName));
             if (take <= 0 || take > 1000) throw new ArgumentOutOfRangeException(nameof(take));
@@ -236,7 +221,7 @@
             }
 
             var result = container.ListBlobsSegmented(prefix, true, BlobListingDetails.UncommittedBlobs, take, token, null, null);
-            var results = result.Results?.Select(_ => BlobInfo(container, (CloudBlob)_, includeExtendedProperties)) ?? new List<StorageBlobInfo>();
+            var results = result.Results?.Select(_ => BlobInfo(container, (CloudBlob)_)) ?? new List<StorageBlobInfo>();
 
             return new StorageBlobQueryResponse<StorageBlobInfo> { Items = results, ContinuationToken = result.ContinuationToken?.NextMarker };
         }
@@ -318,14 +303,14 @@
 
         public async Task<string> ReadBlobAsStringAsync(string containerName, string fileName, Encoding encoding = null)
         {
-            if (encoding == null) encoding = Encoding.UTF8;
+            encoding ??= Encoding.UTF8;
             var content = await ReadBlobAsync(containerName, fileName);
             return encoding.GetString(content);
         }
 
         public async Task<byte[]> ReadBlobAsync(string containerName, string fileName)
         {
-            using var stream = await ReadBlobAsStreamAsync(containerName, fileName);
+            await using var stream = await ReadBlobAsStreamAsync(containerName, fileName);
             return stream.ToArray();
         }
 
@@ -342,8 +327,8 @@
             var container = Client.GetContainerReference(containerName);
             if (!container.Exists()) return null;
 
-            if (timeSpan == null) timeSpan = TimeSpan.FromHours(1);
-            if (startTime == null) startTime = DateTime.UtcNow;
+            timeSpan ??= TimeSpan.FromHours(1);
+            startTime ??= DateTime.UtcNow;
             var expiryTime = startTime + timeSpan;
 
             return container.GetSharedAccessSignature(
@@ -417,11 +402,11 @@
 
         public async Task WriteBlobAsync(string containerName, string fileName, byte[] content, bool overwrite = false)
         {
-            using var stream = new MemoryStream(content);
+            await using var stream = new MemoryStream(content);
             await WriteBlobAsync(containerName, fileName, stream, overwrite);
         }
 
-        private static StorageBlobInfo BlobInfo(CloudBlobContainer container, CloudBlob blob, bool includeExtendedProperties = false)
+        private static StorageBlobInfo BlobInfo(CloudBlobContainer container, CloudBlob blob)
         {
             var ret = new StorageBlobInfo
             {
@@ -432,12 +417,6 @@
                 Uri = blob.Uri,
                 AbsoluteUri = blob.Uri.AbsoluteUri
             };
-
-            if (includeExtendedProperties)
-            {
-                blob.FetchAttributes();
-                if (blob.Properties.LastModified != null) ret.LastModified = blob.Properties.LastModified.Value.UtcDateTime;
-            }
 
             return ret;
         }

@@ -1,74 +1,60 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Sample.Shared.Abstractions
+﻿namespace Sample.Shared.Abstractions
 {
+    using System;
+    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
+    using System.Text;
     using System.Threading.Tasks;
 
     public interface IBlobRepository
-	{
-		bool BlobExists(string containerName, string fileName);
+    {
+        bool BlobExists(string containerName, string fileName);
 
-		Task<bool> BlobExistsAsync(string containerName, string fileName);
+        Task<bool> BlobExistsAsync(string containerName, string fileName);
 
-		StorageBlobInfo BlobInfo(string containerName, string fileName, bool includeExtendedProperties = false);
+        StorageBlobInfo BlobInfo(string containerName, string fileName);
 
-		Task<StorageBlobInfo> BlobInfoAsync(string containerName, string fileName, bool includeExtendedProperties = false);
+        Task<StorageBlobInfo> BlobInfoAsync(string containerName, string fileName);
 
-		StorageBlobContainerInfo ContainerInfo(string name);
+        StorageBlobContainerInfo ContainerInfo(string name);
 
+        void DeleteBlob(string containerName, string fileName);
 
-		void DeleteBlob(string containerName, string fileName);
+        Task DeleteBlobAsync(string containerName, string fileName);
 
-		Task DeleteBlobAsync(string containerName, string fileName);
+        StorageBlobContainerInfo EnsureContainer(string containerName);
 
-		StorageBlobContainerInfo EnsureContainer(string containerName, bool setPublicAccessType = false);
+        Task<StorageBlobContainerInfo> EnsureContainerAsync(string containerName);
 
-		Task<StorageBlobContainerInfo> EnsureContainerAsync(string containerName, bool setPublicAccessType = false);
+        byte[] ReadBlob(string containerName, string fileName);
 
-		//StorageBlobQueryResponse<StorageBlobInfo> ListBlobs(
-		//	string containerName,
-		//	string prefix = null,
-		//	int take = 1000,
-		//	string continuationToken = null,
-		//	bool includeExtendedProperties = false);
+        Stream ReadBlobAsStream(string containerName, string fileName);
 
-		//StorageBlobQueryResponse<StorageBlobContainerInfo> ListContainers(
-		//	string prefix = null,
-		//	int take = 1000,
-		//	string continuationToken = null);
+        Task<MemoryStream> ReadBlobAsStreamAsync(string containerName, string fileName);
 
-		byte[] ReadBlob(string containerName, string fileName);
+        string ReadBlobAsString(string containerName, string fileName, Encoding encoding = null);
 
-		Stream ReadBlobAsStream(string containerName, string fileName);
+        Task<string> ReadBlobAsStringAsync(string containerName, string fileName, Encoding encoding = null);
 
-		Task<MemoryStream> ReadBlobAsStreamAsync(string containerName, string fileName);
+        Task<byte[]> ReadBlobAsync(string containerName, string fileName);
 
-		string ReadBlobAsString(string containerName, string fileName, Encoding encoding = null);
+        void WriteBlob(string containerName, string fileName, string content, bool overwrite = false);
 
-		Task<string> ReadBlobAsStringAsync(string containerName, string fileName, Encoding encoding = null);
+        void WriteBlob(string containerName, string fileName, string content, Encoding encoding, bool overwrite = false);
 
-		Task<byte[]> ReadBlobAsync(string containerName, string fileName);
+        void WriteBlob(string containerName, string fileName, Stream stream, bool overwrite = false);
 
-		void WriteBlob(string containerName, string fileName, string content, bool overwrite = false);
+        void WriteBlob(string containerName, string fileName, byte[] content, bool overwrite = false);
 
-		void WriteBlob(string containerName, string fileName, string content, Encoding encoding, bool overwrite = false);
+        Task WriteBlobAsync(string containerName, string fileName, string content, bool overwrite = false);
 
-		void WriteBlob(string containerName, string fileName, Stream stream, bool overwrite = false);
+        Task WriteBlobAsync(string containerName, string fileName, string content, Encoding encoding, bool overwrite = false);
 
-		void WriteBlob(string containerName, string fileName, byte[] content, bool overwrite = false);
+        Task WriteBlobAsync(string containerName, string fileName, Stream stream, bool overwrite = false);
 
-		Task WriteBlobAsync(string containerName, string fileName, string content, bool overwrite = false);
-
-		Task WriteBlobAsync(string containerName, string fileName, string content, Encoding encoding, bool overwrite = false);
-
-		Task WriteBlobAsync(string containerName, string fileName, Stream stream, bool overwrite = false);
-
-		Task WriteBlobAsync(string containerName, string fileName, byte[] content, bool overwrite = false);
-	}
+        Task WriteBlobAsync(string containerName, string fileName, byte[] content, bool overwrite = false);
+    }
 
     public class StorageBlobQueryResponse<T>
     {
@@ -111,7 +97,7 @@ namespace Sample.Shared.Abstractions
         public DateTime LastModified { get; set; }
 
         /// <summary>
-        ///      Size in Bytes
+        ///     Size in Bytes
         /// </summary>
         public long? Size { get; set; }
 
