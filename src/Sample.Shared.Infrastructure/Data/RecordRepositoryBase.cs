@@ -49,7 +49,7 @@
         {
             record.Id ??= Guid.NewGuid();
 
-            Events.Add(record.Id.Value, recordEvent);
+            //Events.Add(record.Id.Value, recordEvent);
         }
 
         public virtual IQueryable<T> AsQueryable<T>() where T : RecordBase
