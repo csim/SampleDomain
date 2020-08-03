@@ -1,6 +1,7 @@
 ﻿namespace Sample.Shared.Infrastructure.Data
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,10 @@
     public abstract class RecordRepositoryBase : IRecordRepository
     {
         protected DbContext DbContext { get; set; }
+
+        protected Dictionary<string, IRecordEvent> EventLookup { get; } = new Dictionary<string, IRecordEvent>();
+
+        protected Dictionary<string, IRecordEvent> EventRegistrations { get; } = new Dictionary<string, IRecordEvent>();
 
         public virtual T Add<T>(T record) where T : RecordBase
         {
@@ -38,6 +43,13 @@
             await DbContext.SaveChangesAsync();
 
             return record;
+        }
+
+        public void AddEvent<TRecord>(TRecord record, IRecordEvent recordEvent) where TRecord : RecordBase
+        {
+            record.Id ??= Guid.NewGuid();
+
+            Events.Add(record.Id.Value, recordEvent);
         }
 
         public virtual IQueryable<T> AsQueryable<T>() where T : RecordBase
@@ -89,5 +101,30 @@
 
             await DbContext.SaveChangesAsync();
         }
+
+        private void TriggerEvents()
+        {
+        }
+    }
+
+    public class RecordEventRegistration
+    {
+        public RecordEventRegistration(RecordOperation operation, Type eventType)
+        {
+            Operation = operation;
+            EventType = eventType;
+        }
+
+        public Type EventType { get; set; }
+
+        public RecordOperation Operation { get; set; }
+    }
+
+    public enum RecordOperation
+    {
+        Add,
+        Retrieve,
+        Update,
+        Delete,
     }
 }
