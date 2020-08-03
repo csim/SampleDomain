@@ -9,7 +9,7 @@
         public DateTime? CreatedOn { get; set; }
 
         [IgnoreMemberValue]
-        public List<EventBase> Events { get; set; } = new List<EventBase>();
+        public List<IRecordEvent> Events { get; } = new List<IRecordEvent>();
 
         [Key]
         public Guid? Id { get; set; }

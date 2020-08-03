@@ -15,7 +15,7 @@
         {
             IsDone = true;
 
-            Events.Add(new ToDoItemCompletedEvent(this));
+            Events.Add(ToDoItemCompletedEvent.Create(this));
         }
 
         public override string ToString()

@@ -3,13 +3,23 @@
     using Sample.Domain.Records;
     using Sample.Shared.Abstractions;
 
-    public class ToDoItemCompletedEvent : EventBase
+    public class ToDoItemCompletedEvent : RecordEventBase<ToDoItemRecord>, IRecordEvent
     {
-        public ToDoItemCompletedEvent(ToDoItemRecord completedItem)
+        private ToDoItemCompletedEvent()
         {
-            CompletedItem = completedItem;
         }
 
-        public ToDoItemRecord CompletedItem { get; set; }
+        public ToDoItemCompletedEvent(ToDoItemRecord records)
+        {
+            Record = records;
+        }
+
+        public static ToDoItemCompletedEvent Create(ToDoItemRecord record)
+        {
+            return new ToDoItemCompletedEvent
+            {
+                Record = record
+            };
+        }
     }
 }

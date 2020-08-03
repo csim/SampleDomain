@@ -42,6 +42,16 @@
                             options.CosmosConnection.DatabaseName))
                     .AddScoped<IRecordRepository, CosmosRecordRepository>();
             }
+            else if (options.RecordRepositoryMode == RecordRepositoryMode.InMemory)
+            {
+                services
+                    
+                    .AddDbContext<CosmosDbContext>(
+                        o => o.UseInMemoryDatabase(databaseName: "Sample")
+                    )
+                    .AddScoped<IRecordRepository, CosmosRecordRepository>();
+
+            }
             else
             {
                 throw new ApplicationException($"Unknown RecordDatabaseType ({options.RecordRepositoryMode})");

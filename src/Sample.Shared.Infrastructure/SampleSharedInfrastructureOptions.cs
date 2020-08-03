@@ -28,7 +28,8 @@
     public enum RecordRepositoryMode
     {
         SqlLite,
-        Cosmos
+        Cosmos,
+        InMemory
     }
 
     public enum BlobRespositoryMode
