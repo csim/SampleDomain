@@ -101,10 +101,6 @@
 
             await DbContext.SaveChangesAsync();
         }
-
-        private void TriggerEvents()
-        {
-        }
     }
 
     public class RecordEventRegistration

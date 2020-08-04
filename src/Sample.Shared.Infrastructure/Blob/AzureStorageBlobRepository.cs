@@ -429,4 +429,17 @@
             return new StorageBlobContainerInfo { Name = container.Name, Uri = container.Uri };
         }
     }
+
+    public class StorageBlobCopyInfo
+    {
+        public string SourceAccessToken { get; set; }
+
+        public string SourceFilename { get; set; }
+
+        public Uri SourceUri { get; set; }
+
+        public string TargetContainerName { get; set; }
+
+        public string TargetFilename { get; set; }
+    }
 }

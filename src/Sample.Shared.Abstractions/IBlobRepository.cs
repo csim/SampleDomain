@@ -63,19 +63,6 @@
         public IEnumerable<T> Items { get; set; }
     }
 
-    public class StorageBlobCopyInfo
-    {
-        public string SourceAccessToken { get; set; }
-
-        public string SourceFilename { get; set; }
-
-        public Uri SourceUri { get; set; }
-
-        public string TargetContainerName { get; set; }
-
-        public string TargetFilename { get; set; }
-    }
-
     public class StorageBlobContainerInfo
     {
         public string Name { get; set; }
@@ -93,8 +80,6 @@
         public string ContentType { get; set; }
 
         public string Filename { get; set; }
-
-        public DateTime LastModified { get; set; }
 
         /// <summary>
         ///     Size in Bytes
