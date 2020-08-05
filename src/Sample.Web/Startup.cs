@@ -7,6 +7,7 @@
     using Microsoft.Extensions.Hosting;
     using Sample.Domain;
     using Sample.Shared.Infrastructure;
+    using Serilog;
 
     public class Startup
     {
@@ -47,6 +48,7 @@
             services
                 .AddWeb(_configuration)
                 .AddDomain(_configuration)
+                .AddLogging(options => options.AddSerilog(Log.Logger, dispose: true))
                 .AddSharedInfrastructure(_configuration);
         }
     }
