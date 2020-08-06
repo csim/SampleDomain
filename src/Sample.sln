@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Domain", "Sample.Domain\Sample.Domain.csproj", "{4D3DDFC3-FDD1-41B8-BF29-A5977569EC9D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Ordering.Domain", "Sample.Domain\Sample.Ordering.Domain.csproj", "{4D3DDFC3-FDD1-41B8-BF29-A5977569EC9D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_private", "_private", "{004554F2-75A7-4B8F-86E2-753F2B6E0942}"
 	ProjectSection(SolutionItems) = preProject
@@ -21,6 +21,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Abstractions", "Sample.Shared.Abstractions\Sample.Abstractions.csproj", "{F0592DFC-91A9-4AB2-8CE4-A36DB93A180C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Infrastructure", "Sample.Shared.Infrastructure\Sample.Infrastructure.csproj", "{2E7D39DF-FA33-4BF0-9382-084B69112E39}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domains", "Domains", "{268D8FA2-F112-4C5E-8776-21DF24B9C705}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,6 +51,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{4D3DDFC3-FDD1-41B8-BF29-A5977569EC9D} = {268D8FA2-F112-4C5E-8776-21DF24B9C705}
 		{F0592DFC-91A9-4AB2-8CE4-A36DB93A180C} = {892DFF2E-DE09-4C8C-9E09-1BFA630F125D}
 		{2E7D39DF-FA33-4BF0-9382-084B69112E39} = {892DFF2E-DE09-4C8C-9E09-1BFA630F125D}
 	EndGlobalSection

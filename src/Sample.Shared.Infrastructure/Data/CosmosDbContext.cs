@@ -4,7 +4,7 @@
     using System.Threading.Tasks;
     using Ardalis.EFCore.Extensions;
     using Microsoft.EntityFrameworkCore;
-    using Sample.Domain.Records;
+    using Sample.Ordering.Domain.Records;
 
     public class CosmosDbContext : DbContext
     {
@@ -20,7 +20,7 @@
             //_mediator = mediator;
         }
 
-        public DbSet<ToDoItemRecord> ToDoItems { get; set; }
+        public DbSet<OrderRecord> ToDoItems { get; set; }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
@@ -61,7 +61,7 @@
             }
 
             modelBuilder
-                .Entity<ToDoItemRecord>()
+                .Entity<OrderRecord>()
                 .Ignore(_ => _.Events);
 
             modelBuilder.ApplyAllConfigurationsFromCurrentAssembly();

@@ -1,20 +1,20 @@
-﻿namespace Sample.Domain.Events
+﻿namespace Sample.Ordering.Domain.Events
 {
     using Sample.Abstractions;
-    using Sample.Domain.Records;
+    using Sample.Ordering.Domain.Records;
 
-    public class ToDoItemCompletedEvent : RecordEventBase<ToDoItemRecord>, IRecordEvent
+    public class ToDoItemCompletedEvent : RecordEventBase<OrderRecord>, IRecordEvent
     {
         private ToDoItemCompletedEvent()
         {
         }
 
-        public ToDoItemCompletedEvent(ToDoItemRecord records)
+        public ToDoItemCompletedEvent(OrderRecord records)
         {
             Record = records;
         }
 
-        public static ToDoItemCompletedEvent Create(ToDoItemRecord record)
+        public static ToDoItemCompletedEvent Create(OrderRecord record)
         {
             return new ToDoItemCompletedEvent
             {

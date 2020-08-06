@@ -5,8 +5,8 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
-    using Sample.Domain;
     using Sample.Infrastructure;
+    using Sample.Ordering.Domain;
     using Serilog;
 
     public class Startup
@@ -43,13 +43,13 @@
         {
             var infraOptions = GetOptions<SampleInfrastructureOptions>();
             var webOptions = GetOptions<SampleWebOptions>();
-            var domainOptions = GetOptions<SampleDomainOptions>();
+            var domainOptions = GetOptions<SampleOrderingDomainOptions>();
 
             services
                 .AddControllers();
             services
                 .AddSharedInfrastructure(infraOptions)
-                .AddDomain(domainOptions)
+                .AddOrderingDomain(domainOptions)
                 .AddWeb(webOptions)
                 .AddLogging(options => options.AddSerilog(Log.Logger, dispose: true));
         }

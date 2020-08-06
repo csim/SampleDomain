@@ -4,13 +4,13 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Sample.Abstractions;
-    using Sample.Domain.Records;
     using Sample.Infrastructure.Blob;
     using Sample.Infrastructure.Data;
+    using Sample.Ordering.Domain.Records;
 
     public static class SampleInfrastructureModule
     {
-        public static readonly Type[] RecordTypes = { typeof(ToDoItemRecord) };
+        public static readonly Type[] RecordTypes = { typeof(OrderRecord) };
 
         public static IServiceCollection AddSharedInfrastructure(this IServiceCollection services, SampleInfrastructureOptions options)
         {

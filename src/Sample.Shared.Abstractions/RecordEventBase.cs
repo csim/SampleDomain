@@ -6,11 +6,11 @@
     {
         public T Record { get; set; }
 
-        public DateTime Timestamp { get; } = DateTime.UtcNow;
+        public DateTime OriginatedOn { get; } = DateTime.UtcNow;
     }
 
     public interface IRecordEvent
     {
-        public DateTime Timestamp { get; }
+        public DateTime OriginatedOn { get; }
     }
 }

@@ -1,6 +1,6 @@
-﻿namespace Sample.Domain
+﻿namespace Sample.Ordering.Domain
 {
-    public class SampleDomainOptions
+    public class SampleOrderingDomainOptions
     {
     }
 }

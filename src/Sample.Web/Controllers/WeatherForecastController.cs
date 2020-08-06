@@ -6,7 +6,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Sample.Abstractions;
-    using Sample.Domain.Records;
+    using Sample.Ordering.Domain.Records;
 
     [ApiController]
     [Route("[controller]")]
@@ -58,7 +58,7 @@
 
 
             await _recordRepository
-                .AddAsync(new ToDoItemRecord { PartitionKey = "cbaeb852-449b-4619-9618-006b8a063634", Description = $"test {DateTime.UtcNow}" });
+                .AddAsync(new OrderRecord { PartitionKey = "cbaeb852-449b-4619-9618-006b8a063634" });
 
 
             //await _recordRepository
@@ -76,7 +76,7 @@
             //    });
 
             var items = _recordRepository
-                .AsQueryable<ToDoItemRecord>()
+                .AsQueryable<OrderRecord>()
                 .Where(_ => _.PartitionKey == "cbaeb852-449b-4619-9618-006b8a063634")
                 .OrderByDescending(_ => _.CreatedOn)
                 .ToList();
