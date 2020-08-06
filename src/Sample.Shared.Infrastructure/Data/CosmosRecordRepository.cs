@@ -1,4 +1,4 @@
-﻿namespace Sample.Shared.Infrastructure.Data
+﻿namespace Sample.Infrastructure.Data
 {
     public class CosmosRecordRepository : RecordRepositoryBase
     {

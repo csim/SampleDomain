@@ -1,7 +1,7 @@
 ﻿namespace Sample.Domain.Records
 {
+    using Sample.Abstractions;
     using Sample.Domain.Events;
-    using Sample.Shared.Abstractions;
 
     public class ToDoItemRecord : RecordBase
     {

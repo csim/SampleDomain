@@ -1,4 +1,4 @@
-﻿namespace Sample.Shared.Infrastructure.Data
+﻿namespace Sample.Infrastructure.Data
 {
     using System.Threading;
     using System.Threading.Tasks;
@@ -52,7 +52,7 @@
         {
             base.OnModelCreating(modelBuilder);
 
-            foreach (var recordType in SampleSharedInfrastructureModule.RecordTypes)
+            foreach (var recordType in SampleInfrastructureModule.RecordTypes)
             {
                 modelBuilder
                     .Entity(recordType)

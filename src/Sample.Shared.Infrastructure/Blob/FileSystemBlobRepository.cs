@@ -1,11 +1,11 @@
-﻿namespace Sample.Shared.Infrastructure.Blob
+﻿namespace Sample.Infrastructure.Blob
 {
     using System;
     using System.IO;
     using System.Text;
     using System.Threading.Tasks;
     using MimeMapping;
-    using Sample.Shared.Abstractions;
+    using Sample.Abstractions;
 
     public class FileSystemBlobRepository : IBlobRepository
     {

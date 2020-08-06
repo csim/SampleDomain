@@ -6,7 +6,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Sample.Domain;
-    using Sample.Shared.Infrastructure;
+    using Sample.Infrastructure;
     using Serilog;
 
     public class Startup
@@ -39,17 +39,27 @@
                 });
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services
-                .AddControllers();
+            var infraOptions = GetOptions<SampleInfrastructureOptions>();
+            var webOptions = GetOptions<SampleWebOptions>();
+            var domainOptions = GetOptions<SampleDomainOptions>();
 
             services
-                .AddWeb(_configuration)
-                .AddDomain(_configuration)
-                .AddLogging(options => options.AddSerilog(Log.Logger, dispose: true))
-                .AddSharedInfrastructure(_configuration);
+                .AddControllers();
+            services
+                .AddSharedInfrastructure(infraOptions)
+                .AddDomain(domainOptions)
+                .AddWeb(webOptions)
+                .AddLogging(options => options.AddSerilog(Log.Logger, dispose: true));
+        }
+
+        private TOptions GetOptions<TOptions>() where TOptions : class, new()
+        {
+            return _configuration
+                    .GetSection(typeof(TOptions).Namespace)
+                    .Get<TOptions>()
+                ?? new TOptions();
         }
     }
 }

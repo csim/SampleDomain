@@ -1,6 +1,6 @@
-﻿namespace Sample.Shared.Infrastructure
+﻿namespace Sample.Infrastructure
 {
-    public class SampleSharedInfrastructureOptions
+    public class SampleInfrastructureOptions
     {
         public string AzureStorageAccountConnection { get; set; } = "UseDevelopmentStorage=true";
 

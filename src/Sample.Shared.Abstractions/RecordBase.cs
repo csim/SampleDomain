@@ -1,4 +1,4 @@
-﻿namespace Sample.Shared.Abstractions
+﻿namespace Sample.Abstractions
 {
     using System;
     using System.Collections.Generic;

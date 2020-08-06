@@ -1,11 +1,11 @@
-﻿namespace Sample.Shared.Infrastructure.Data
+﻿namespace Sample.Infrastructure.Data
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
-    using Sample.Shared.Abstractions;
+    using Sample.Abstractions;
 
     public abstract class RecordRepositoryBase : IRecordRepository
     {

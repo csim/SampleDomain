@@ -20,8 +20,8 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Sample.Domain\Sample.Domain.csproj" />
-        <ProjectReference Include="..\Sample.Shared.Abstractions\Sample.Shared.Abstractions.csproj" />
-        <ProjectReference Include="..\Sample.Shared.Infrastructure\Sample.Shared.Infrastructure.csproj" />
+        <ProjectReference Include="..\Sample.Shared.Abstractions\Sample.Abstractions.csproj" />
+        <ProjectReference Include="..\Sample.Shared.Infrastructure\Sample.Infrastructure.csproj" />
     </ItemGroup>
 
 

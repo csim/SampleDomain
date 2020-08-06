@@ -1,31 +1,18 @@
-﻿namespace Sample.Shared.Infrastructure
+﻿namespace Sample.Infrastructure
 {
     using System;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Sample.Abstractions;
     using Sample.Domain.Records;
-    using Sample.Shared.Abstractions;
-    using Sample.Shared.Infrastructure.Blob;
-    using Sample.Shared.Infrastructure.Data;
+    using Sample.Infrastructure.Blob;
+    using Sample.Infrastructure.Data;
 
-    public static class SampleSharedInfrastructureModule
+    public static class SampleInfrastructureModule
     {
         public static readonly Type[] RecordTypes = { typeof(ToDoItemRecord) };
 
-        public static IServiceCollection AddSharedInfrastructure(this IServiceCollection services, IConfiguration configuration)
-        {
-            var moduleType = typeof(SampleSharedInfrastructureModule);
-            var options = configuration
-                    .GetSection(moduleType.Namespace)
-                    .Get<SampleSharedInfrastructureOptions>()
-                ?? new SampleSharedInfrastructureOptions();
-
-            return services
-                .AddSharedInfrastructure(options);
-        }
-
-        public static IServiceCollection AddSharedInfrastructure(this IServiceCollection services, SampleSharedInfrastructureOptions options)
+        public static IServiceCollection AddSharedInfrastructure(this IServiceCollection services, SampleInfrastructureOptions options)
         {
             if (options.RecordRepositoryMode == RecordRepositoryMode.SqlLite)
             {
@@ -45,12 +32,10 @@
             else if (options.RecordRepositoryMode == RecordRepositoryMode.InMemory)
             {
                 services
-                    
                     .AddDbContext<CosmosDbContext>(
                         o => o.UseInMemoryDatabase(databaseName: "Sample")
                     )
                     .AddScoped<IRecordRepository, CosmosRecordRepository>();
-
             }
             else
             {

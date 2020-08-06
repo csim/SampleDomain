@@ -1,7 +1,7 @@
 ﻿namespace Sample.Domain.Events
 {
+    using Sample.Abstractions;
     using Sample.Domain.Records;
-    using Sample.Shared.Abstractions;
 
     public class ToDoItemCompletedEvent : RecordEventBase<ToDoItemRecord>, IRecordEvent
     {

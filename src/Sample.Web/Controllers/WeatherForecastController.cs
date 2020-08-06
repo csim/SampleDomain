@@ -5,8 +5,8 @@
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
+    using Sample.Abstractions;
     using Sample.Domain.Records;
-    using Sample.Shared.Abstractions;
 
     [ApiController]
     [Route("[controller]")]
@@ -58,11 +58,7 @@
 
 
             await _recordRepository
-                .AddAsync(new ToDoItemRecord
-                {
-                    PartitionKey = "cbaeb852-449b-4619-9618-006b8a063634",
-                    Description = $"test {DateTime.UtcNow}"
-                });
+                .AddAsync(new ToDoItemRecord { PartitionKey = "cbaeb852-449b-4619-9618-006b8a063634", Description = $"test {DateTime.UtcNow}" });
 
 
             //await _recordRepository

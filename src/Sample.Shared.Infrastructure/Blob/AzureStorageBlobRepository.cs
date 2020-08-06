@@ -1,4 +1,4 @@
-﻿namespace Sample.Shared.Infrastructure.Blob
+﻿namespace Sample.Infrastructure.Blob
 {
     using System;
     using System.Collections.Generic;
@@ -11,7 +11,7 @@
     using Microsoft.Azure.Storage;
     using Microsoft.Azure.Storage.Blob;
     using MimeMapping;
-    using Sample.Shared.Abstractions;
+    using Sample.Abstractions;
 
     [ExcludeFromCodeCoverage]
     public class AzureStorageBlobRepository : IBlobRepository

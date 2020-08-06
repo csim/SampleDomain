@@ -7,16 +7,20 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Domain", "Sample.Dom
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_private", "_private", "{004554F2-75A7-4B8F-86E2-753F2B6E0942}"
 	ProjectSection(SolutionItems) = preProject
+		.dockerignore = .dockerignore
 		.editorconfig = .editorconfig
+		..\.gitattributes = ..\.gitattributes
+		..\.gitignore = ..\.gitignore
+		..\SampleDomain.code-workspace = ..\SampleDomain.code-workspace
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Web", "Sample.Web\Sample.Web.csproj", "{4D892B3A-BD50-4ACB-ACB1-319EDB19BDEB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{892DFF2E-DE09-4C8C-9E09-1BFA630F125D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Shared.Abstractions", "Sample.Shared.Abstractions\Sample.Shared.Abstractions.csproj", "{F0592DFC-91A9-4AB2-8CE4-A36DB93A180C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Abstractions", "Sample.Shared.Abstractions\Sample.Abstractions.csproj", "{F0592DFC-91A9-4AB2-8CE4-A36DB93A180C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Shared.Infrastructure", "Sample.Shared.Infrastructure\Sample.Shared.Infrastructure.csproj", "{2E7D39DF-FA33-4BF0-9382-084B69112E39}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Infrastructure", "Sample.Shared.Infrastructure\Sample.Infrastructure.csproj", "{2E7D39DF-FA33-4BF0-9382-084B69112E39}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
