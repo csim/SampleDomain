@@ -3,7 +3,7 @@
     using System;
     using Sample.Abstractions;
 
-    public class ProductRecord : RecordBase
+    public class ProductRecord : RecordBase, ICompactableRecord
     {
         public string Name { get; set; }
 
@@ -15,7 +15,7 @@
         }
     }
 
-    public class ProductCompact
+    public class CompactProductRecord
     {
         public Guid Id { get; set; }
 
