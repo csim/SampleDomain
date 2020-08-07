@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>abbba1f3-a622-409d-a797-3af2f217ca33</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SampleApp.Shared\SampleApp.Shared.Abstractions\SampleApp.Shared.Abstractions.csproj" />
+    <ProjectReference Include="..\SampleApp.Shared\SampleApp.Shared.Infrastructure\SampleApp.Shared.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
