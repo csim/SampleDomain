@@ -168,17 +168,7 @@
         {
             if (string.IsNullOrEmpty(filePath)) throw new ArgumentException("Value cannot be null or empty.", nameof(filePath));
 
-            if (File.Exists(filePath))
-            {
-                if (overwrite)
-                {
-                    File.Exists(filePath);
-                }
-                else
-                {
-                    throw new ApplicationException($"File already exists ({filePath})");
-                }
-            }
+            if (File.Exists(filePath) && !overwrite) throw new ApplicationException($"File already exists ({filePath})");
 
             EnsureFilePath(filePath);
             using var fileStream = File.Create(filePath);
@@ -199,10 +189,7 @@
 
             filePath = ExpandFilePath(filePath);
 
-            if (File.Exists(filePath) && !overwrite)
-            {
-                throw new ApplicationException($"File already exists ({filePath})");
-            }
+            if (File.Exists(filePath) && !overwrite) throw new ApplicationException($"File already exists ({filePath})");
 
             EnsureFilePath(filePath);
             File.WriteAllBytes(filePath, content);
