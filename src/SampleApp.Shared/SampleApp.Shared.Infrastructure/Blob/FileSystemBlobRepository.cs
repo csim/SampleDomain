@@ -157,7 +157,7 @@
         {
             if (string.IsNullOrEmpty(filePath)) throw new ArgumentException("Value cannot be null or empty.", nameof(filePath));
             if (content == null) throw new ArgumentNullException(nameof(content));
-            if (encoding == null) throw new ArgumentNullException(nameof(encoding));
+            encoding ??= Encoding.UTF8;
 
             var bcontent = encoding.GetBytes(content.ToCharArray());
 
