@@ -11,9 +11,9 @@
     {
         private string _basePath;
 
-        public void Delete(string fileName)
+        public void Delete(string filePath)
         {
-            DeleteAsync(fileName).GetAwaiter().GetResult();
+            DeleteAsync(filePath).GetAwaiter().GetResult();
         }
 
         public Task DeleteAsync(string filePath)
@@ -40,9 +40,9 @@
             return Task.FromResult(true);
         }
 
-        public bool Exists(string fileName)
+        public bool Exists(string filePath)
         {
-            return ExistsAsync(fileName).GetAwaiter().GetResult();
+            return ExistsAsync(filePath).GetAwaiter().GetResult();
         }
 
         public Task<bool> ExistsAsync(string filePath)
@@ -55,9 +55,9 @@
             return Task.FromResult(ret);
         }
 
-        public StorageBlobInfo Info(string fileName)
+        public StorageBlobInfo Info(string filePath)
         {
-            return InfoAsync(fileName).GetAwaiter().GetResult();
+            return InfoAsync(filePath).GetAwaiter().GetResult();
         }
 
         public Task<StorageBlobInfo> InfoAsync(string filePath)
@@ -75,14 +75,14 @@
             return Task.FromResult(ret);
         }
 
-        public byte[] Read(string fileName)
+        public byte[] Read(string filePath)
         {
-            return ReadAsync(fileName).GetAwaiter().GetResult();
+            return ReadAsync(filePath).GetAwaiter().GetResult();
         }
 
-        public Stream ReadAsStream(string fileName)
+        public Stream ReadAsStream(string filePath)
         {
-            return ReadAsStreamAsync(fileName).GetAwaiter().GetResult();
+            return ReadAsStreamAsync(filePath).GetAwaiter().GetResult();
         }
 
         public Task<Stream> ReadAsStreamAsync(string filePath)
@@ -170,7 +170,7 @@
 
             if (File.Exists(filePath) && !overwrite) throw new ApplicationException($"File already exists ({filePath})");
 
-            EnsureFilePath(filePath);
+            EnsureDirectory(filePath);
             using var fileStream = File.Create(filePath);
 
             byte[] buffer = new byte[8 * 1024];
@@ -191,15 +191,15 @@
 
             if (File.Exists(filePath) && !overwrite) throw new ApplicationException($"File already exists ({filePath})");
 
-            EnsureFilePath(filePath);
+            EnsureDirectory(filePath);
             File.WriteAllBytes(filePath, content);
 
             return Task.CompletedTask;
         }
 
-        private void EnsureFilePath(string fileName)
+        private void EnsureDirectory(string filePath)
         {
-            var parentDir = Directory.GetParent(fileName).FullName;
+            var parentDir = Directory.GetParent(filePath).FullName;
             if (!Directory.Exists(parentDir)) Directory.CreateDirectory(parentDir);
         }
 
