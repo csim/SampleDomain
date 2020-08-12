@@ -199,16 +199,9 @@
 
             filePath = ExpandFilePath(filePath);
 
-            if (File.Exists(filePath))
+            if (File.Exists(filePath) && !overwrite)
             {
-                if (overwrite)
-                {
-                    File.Exists(filePath);
-                }
-                else
-                {
-                    throw new ApplicationException($"File already exists ({filePath})");
-                }
+                throw new ApplicationException($"File already exists ({filePath})");
             }
 
             EnsureFilePath(filePath);
