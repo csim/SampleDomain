@@ -197,7 +197,7 @@
             return Task.CompletedTask;
         }
 
-        private void EnsureDirectory(string filePath)
+        private static void EnsureDirectory(string filePath)
         {
             var parentDir = Directory.GetParent(filePath).FullName;
             if (!Directory.Exists(parentDir)) Directory.CreateDirectory(parentDir);
