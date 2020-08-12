@@ -1,7 +1,6 @@
 ﻿namespace SampleApp.Shared.Abstractions
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Text;
@@ -9,77 +8,55 @@
 
     public interface IBlobRepository
     {
-        bool BlobExists(string containerName, string fileName);
+        void Delete(string filePath);
 
-        Task<bool> BlobExistsAsync(string containerName, string fileName);
+        Task DeleteAsync(string filePath);
 
-        StorageBlobInfo BlobInfo(string containerName, string fileName);
+        bool Exists(string filePath);
 
-        Task<StorageBlobInfo> BlobInfoAsync(string containerName, string fileName);
+        Task<bool> ExistsAsync(string filePath);
 
-        StorageBlobContainerInfo ContainerInfo(string name);
+        StorageBlobInfo Info(string filePath);
 
-        void DeleteBlob(string containerName, string fileName);
+        Task<StorageBlobInfo> InfoAsync(string filePath);
 
-        Task DeleteBlobAsync(string containerName, string fileName);
+        byte[] Read(string filePath);
 
-        StorageBlobContainerInfo EnsureContainer(string containerName);
+        Stream ReadAsStream(string filePath);
 
-        Task<StorageBlobContainerInfo> EnsureContainerAsync(string containerName);
+        Task<Stream> ReadAsStreamAsync(string filePath);
 
-        byte[] ReadBlob(string containerName, string fileName);
+        string ReadAsString(string filePath, Encoding encoding = null);
 
-        Stream ReadBlobAsStream(string containerName, string fileName);
+        Task<string> ReadAsStringAsync(string filePath, Encoding encoding = null);
 
-        Task<Stream> ReadBlobAsStreamAsync(string containerName, string fileName);
+        Task<byte[]> ReadAsync(string filePath);
 
-        string ReadBlobAsString(string containerName, string fileName, Encoding encoding = null);
+        void Write(string filePath, string content, bool overwrite = false);
 
-        Task<string> ReadBlobAsStringAsync(string containerName, string fileName, Encoding encoding = null);
+        void Write(string filePath, string content, Encoding encoding, bool overwrite = false);
 
-        Task<byte[]> ReadBlobAsync(string containerName, string fileName);
+        void Write(string filePath, Stream stream, bool overwrite = false);
 
-        void WriteBlob(string containerName, string fileName, string content, bool overwrite = false);
+        void Write(string filePath, byte[] content, bool overwrite = false);
 
-        void WriteBlob(string containerName, string fileName, string content, Encoding encoding, bool overwrite = false);
+        Task WriteAsync(string filePath, string content, bool overwrite = false);
 
-        void WriteBlob(string containerName, string fileName, Stream stream, bool overwrite = false);
+        Task WriteAsync(string filePath, string content, Encoding encoding, bool overwrite = false);
 
-        void WriteBlob(string containerName, string fileName, byte[] content, bool overwrite = false);
+        Task WriteAsync(string filePath, Stream stream, bool overwrite = false);
 
-        Task WriteBlobAsync(string containerName, string fileName, string content, bool overwrite = false);
-
-        Task WriteBlobAsync(string containerName, string fileName, string content, Encoding encoding, bool overwrite = false);
-
-        Task WriteBlobAsync(string containerName, string fileName, Stream stream, bool overwrite = false);
-
-        Task WriteBlobAsync(string containerName, string fileName, byte[] content, bool overwrite = false);
-    }
-
-    public class StorageBlobQueryResponse<T>
-    {
-        public string ContinuationToken { get; set; }
-
-        public IEnumerable<T> Items { get; set; }
-    }
-
-    public class StorageBlobContainerInfo
-    {
-        public string Name { get; set; }
-
-        public Uri Uri { get; set; }
+        Task WriteAsync(string filePath, byte[] content, bool overwrite = false);
     }
 
     [ExcludeFromCodeCoverage]
     public class StorageBlobInfo
     {
-        public string AbsoluteUri { get; set; }
-
-        public StorageBlobContainerInfo Container { get; set; }
-
         public string ContentType { get; set; }
 
         public string Filename { get; set; }
+
+        public string Path { get; set; }
 
         /// <summary>
         ///     Size in Bytes
