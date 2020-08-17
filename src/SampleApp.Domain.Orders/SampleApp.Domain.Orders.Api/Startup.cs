@@ -1,10 +1,11 @@
-﻿namespace SampleApp.Domain.Orders.Api
+﻿namespace SampleApp.Orders.Api
 {
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using SampleApp.Orders.Domain;
     using SampleApp.Shared.Infrastructure;
     using Serilog;
 
@@ -41,14 +42,14 @@
         public void ConfigureServices(IServiceCollection services)
         {
             var infraOptions = GetOptions<InfrastructureOptions>();
-            var webOptions = GetOptions<OrdersApiOptions>();
+            var webOptions = GetOptions<OrdersEndpointOptions>();
             var domainOptions = GetOptions<SampleOrderingDomainOptions>();
 
             services
                 .AddControllers();
             services
                 .AddSharedInfrastructure(infraOptions)
-                .AddOrderingDomain(domainOptions)
+                .AddOrdersDomain(domainOptions)
                 .AddWeb(webOptions)
                 .AddLogging(options => options.AddSerilog(Log.Logger, dispose: true));
         }

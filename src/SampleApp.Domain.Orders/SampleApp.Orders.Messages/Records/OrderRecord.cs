@@ -1,4 +1,4 @@
-﻿namespace SampleApp.Domain.Orders.Records
+﻿namespace SampleApp.Orders.Client.Records
 {
     using System.Collections.Generic;
     using SampleApp.Shared.Abstractions;

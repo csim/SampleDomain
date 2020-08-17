@@ -1,10 +1,9 @@
-﻿namespace SampleApp.Domain.Orders.Api.Controllers
+﻿namespace SampleApp.Orders.Api.Controllers
 {
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Logging;
-    using SampleApp.Domain.Orders.Records;
+    using SampleApp.Orders.Client.Records;
     using SampleApp.Shared.Abstractions;
 
     [ApiController]

@@ -21,7 +21,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\SampleApp.Shared\SampleApp.Shared.Abstractions\SampleApp.Shared.Abstractions.csproj" />
       <ProjectReference Include="..\..\SampleApp.Shared\SampleApp.Shared.Infrastructure\SampleApp.Shared.Infrastructure.csproj" />
-      <ProjectReference Include="..\SampleApp.Domain.Orders\SampleApp.Domain.Orders.csproj" />
+      <ProjectReference Include="..\SampleApp.Domain.Orders\SampleApp.Orders.Domain.csproj" />
     </ItemGroup>
 
 

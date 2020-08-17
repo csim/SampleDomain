@@ -1,6 +1,6 @@
-﻿namespace SampleApp.Domain.Orders
+﻿namespace SampleApp.Orders.Domain
 {
-    public class SampleOrderingDomainOptions
+    public class OrdersDomainOptions
     {
     }
 }

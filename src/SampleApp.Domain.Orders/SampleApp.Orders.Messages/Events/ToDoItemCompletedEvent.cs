@@ -1,6 +1,6 @@
-﻿namespace SampleApp.Domain.Orders.Events
+﻿namespace SampleApp.Orders.Client.Events
 {
-    using SampleApp.Domain.Orders.Records;
+    using SampleApp.Orders.Client.Records;
     using SampleApp.Shared.Abstractions;
 
     public class ToDoItemCompletedEvent : RecordEventBase<OrderRecord>, IRecordEvent
@@ -16,10 +16,7 @@
 
         public static ToDoItemCompletedEvent Create(OrderRecord record)
         {
-            return new ToDoItemCompletedEvent
-            {
-                Record = record
-            };
+            return new ToDoItemCompletedEvent { Record = record };
         }
     }
 }

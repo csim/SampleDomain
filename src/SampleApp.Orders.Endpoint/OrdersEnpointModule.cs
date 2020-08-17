@@ -1,12 +1,12 @@
-﻿namespace SampleApp.Domain.Orders
+﻿namespace SampleApp.Orders.Endpoint
 {
     using Microsoft.Extensions.DependencyInjection;
 
-    public static class OrdersDomain
+    public static class OrdersEnpointModule
     {
         //public static IMapper Mapper { get; set; }
 
-        public static IServiceCollection AddOrderingDomain(this IServiceCollection services, SampleOrderingDomainOptions options)
+        public static IServiceCollection AddOrdersDomain(this IServiceCollection services, OrdersEndpointOptions options)
         {
             //var automapperConfiguration = new MapperConfiguration(
             //    cfg =>

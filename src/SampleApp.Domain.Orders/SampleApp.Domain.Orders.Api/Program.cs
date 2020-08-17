@@ -1,4 +1,4 @@
-﻿namespace SampleApp.Domain.Orders.Api
+﻿namespace SampleApp.Orders.Api
 {
     using System;
     using Microsoft.AspNetCore.Hosting;

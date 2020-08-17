@@ -12,6 +12,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\SampleApp.Shared\SampleApp.Shared.Abstractions\SampleApp.Shared.Abstractions.csproj" />
+      <ProjectReference Include="..\SampleApp.Orders.Messages\SampleApp.Orders.Client.csproj" />
     </ItemGroup>
 
 </Project>
