@@ -21,10 +21,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\SampleApp.Domain.Orders\SampleApp.Domain.Orders\SampleApp.Orders.Domain.csproj" />
-      <ProjectReference Include="..\SampleApp.Domain.Orders\SampleApp.Orders.Messages\SampleApp.Orders.Client.csproj" />
-      <ProjectReference Include="..\SampleApp.Shared\SampleApp.Shared.Abstractions\SampleApp.Shared.Abstractions.csproj" />
-      <ProjectReference Include="..\SampleApp.Shared\SampleApp.Shared.Infrastructure\SampleApp.Shared.Infrastructure.csproj" />
+      <ProjectReference Include="..\..\SampleApp.Shared\SampleApp.Shared.Abstractions\SampleApp.Shared.Abstractions.csproj" />
+      <ProjectReference Include="..\..\SampleApp.Shared\SampleApp.Shared.Infrastructure\SampleApp.Shared.Infrastructure.csproj" />
+      <ProjectReference Include="..\SampleApp.Orders.Client\SampleApp.Orders.Client.csproj" />
+      <ProjectReference Include="..\SampleApp.Orders.Domain\SampleApp.Orders.Domain.csproj" />
     </ItemGroup>
 
 </Project>

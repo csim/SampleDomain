@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,7 +13,9 @@ using SampleApp.Web.Data;
 
 namespace SampleApp.Web
 {
-	public class Startup
+    using NServiceBus;
+
+    public class Startup
 	{
 		public Startup(IConfiguration configuration)
 		{
@@ -28,7 +30,9 @@ namespace SampleApp.Web
 		{
 			services.AddRazorPages();
 			services.AddServerSideBlazor();
-			services.AddSingleton<WeatherForecastService>();
+			services
+                .AddScoped<OrdersService>()
+                .AddSingleton<WeatherForecastService>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

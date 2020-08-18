@@ -8,6 +8,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using NServiceBus;
+    using SampleApp.Orders.Client;
     using SampleApp.Orders.Domain;
     using SampleApp.Shared.Infrastructure;
     using Serilog;
@@ -15,7 +16,6 @@
     public class Program
     {
         private static IConfigurationRoot _configuration;
-        private static string _namespace;
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -35,6 +35,10 @@
             var env = Environment.GetEnvironmentVariable("SAMPLEAPP_ENVIRONMENT") ?? "Development";
             env = env.ToLower();
 
+            var messageModule = typeof(OrdersClientModule);
+            var ns = messageModule.Namespace;
+            if (!string.IsNullOrEmpty(ns)) Console.Title = $"{ns} [{env}]";
+
             _configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddEnvironmentVariables("SAMPLEAPP_")
@@ -42,9 +46,6 @@
                 .AddJsonFile($"appsettings.{env}.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"config/appsettings.{env}.secrets.json", optional: true, reloadOnChange: true)
                 .Build();
-
-            _namespace = typeof(Program).Namespace;
-            if (!string.IsNullOrEmpty(_namespace)) Console.Title = _namespace;
 
             var host = Host
                 .CreateDefaultBuilder(args)
@@ -54,9 +55,14 @@
                 .UseNServiceBus(
                     ctx =>
                     {
-                        var config = new EndpointConfiguration(_namespace);
-                        config.UseTransport<LearningTransport>();
+                        var config = new EndpointConfiguration(ns);
+
                         config.DefineCriticalErrorAction(OnCriticalError);
+
+                        config
+                            .UseTransport<LearningTransport>()
+                            .Routing()
+                            .AddOrdersClient();
 
                         return config;
                     })

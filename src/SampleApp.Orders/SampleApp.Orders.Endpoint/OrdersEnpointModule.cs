@@ -1,6 +1,8 @@
 ﻿namespace SampleApp.Orders.Endpoint
 {
     using Microsoft.Extensions.DependencyInjection;
+    using NServiceBus;
+    using NServiceBus.Transport;
 
     public static class OrdersEnpointModule
     {
