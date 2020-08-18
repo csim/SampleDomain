@@ -2,7 +2,6 @@
 {
     using System.Threading;
     using System.Threading.Tasks;
-    using Ardalis.EFCore.Extensions;
     using Microsoft.EntityFrameworkCore;
     using SampleApp.Orders.Client.Records;
 
@@ -14,9 +13,7 @@
             //_mediator = mediator;
         }
 
-        public DbSet<OrderItemRecord> OrderItemss { get; set; }
-
-        public DbSet<OrderRecord> Orders { get; set; }
+        //public DbSet<OrderItemRecord> OrderItemss { get; set; }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
@@ -56,11 +53,6 @@
                     .HasPartitionKey("PartitionKey")
                     .HasKey("Id");
             }
-
-            //modelBuilder.ApplyAllConfigurationsFromCurrentAssembly();
-
-            // alternately this is built-in to EF Core 2.2
-            //modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
     }
 }

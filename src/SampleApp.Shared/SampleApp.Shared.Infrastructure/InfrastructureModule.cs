@@ -8,7 +8,6 @@
     using Microsoft.Extensions.Hosting;
     using NServiceBus;
     using SampleApp.Orders.Client;
-    using SampleApp.Orders.Domain;
     using SampleApp.Shared.Abstractions;
     using SampleApp.Shared.Infrastructure.Blob;
     using SampleApp.Shared.Infrastructure.Data;
@@ -18,9 +17,12 @@
     {
         public static IHostBuilder AddSharedInfrastructure(this IHostBuilder hostBuilder, IConfiguration configuration, string endpointName)
         {
-            var workerEndpointName = "SampleApp.Orders.Endpoint";
+            var workerEndpointName = "SampleApp.Shared.Worker";
 
-            var routeTable = new[] { new { EndpointName = workerEndpointName, typeof(OrdersClientModule).Assembly } };
+            var routeTable = new[]
+            {
+                new { EndpointName = workerEndpointName, typeof(OrdersClientModule).Assembly }
+            };
 
             return hostBuilder
                 .UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration))
@@ -44,7 +46,6 @@
                             .UseTransport<LearningTransport>()
                             .Routing();
 
-                        // Claim message routing for messages supported by this endpoint
                         foreach (var route in routeTable)
                         {
                             routing.RouteToEndpoint(route.Assembly, route.EndpointName);
@@ -56,9 +57,9 @@
 
         public static void Initialize(IHost host, IConfiguration configuration)
         {
-            var infraOptions = GetOptions<InfrastructureOptions>(configuration);
+            var options = GetOptions<InfrastructureOptions>(configuration);
 
-            if (infraOptions.RecordRepositoryMode == RecordRepositoryMode.Cosmos)
+            if (options.RecordRepositoryMode == RecordRepositoryMode.Cosmos)
             {
                 using var scope = host.Services.CreateScope();
                 scope.ServiceProvider.GetRequiredService<CosmosDbContext>().Database.EnsureCreated();
@@ -67,25 +68,24 @@
 
         private static IServiceCollection AddSharedInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            var infraOptions = GetOptions<InfrastructureOptions>(configuration);
-            var ordersDomainOptions = GetOptions<OrdersDomainOptions>(configuration);
+            var options = GetOptions<InfrastructureOptions>(configuration);
 
-            if (infraOptions.RecordRepositoryMode == RecordRepositoryMode.SqlLite)
+            if (options.RecordRepositoryMode == RecordRepositoryMode.SqlLite)
             {
                 services
-                    .AddDbContext<CosmosDbContext>(o => o.UseSqlite(infraOptions.SqlLiteConnection));
+                    .AddDbContext<CosmosDbContext>(o => o.UseSqlite(options.SqlLiteConnection));
             }
-            else if (infraOptions.RecordRepositoryMode == RecordRepositoryMode.Cosmos)
+            else if (options.RecordRepositoryMode == RecordRepositoryMode.Cosmos)
             {
                 services
                     .AddDbContext<CosmosDbContext>(
                         o => o.UseCosmos(
-                            infraOptions.CosmosConnection.AccountEndpoint,
-                            infraOptions.CosmosConnection.AccountKey,
-                            infraOptions.CosmosConnection.DatabaseName))
+                            options.CosmosConnection.AccountEndpoint,
+                            options.CosmosConnection.AccountKey,
+                            options.CosmosConnection.DatabaseName))
                     .AddScoped<IRecordRepository, CosmosRecordRepository>();
             }
-            else if (infraOptions.RecordRepositoryMode == RecordRepositoryMode.InMemory)
+            else if (options.RecordRepositoryMode == RecordRepositoryMode.InMemory)
             {
                 services
                     .AddDbContext<CosmosDbContext>(o => o.UseInMemoryDatabase(databaseName: "Sample"))
@@ -93,11 +93,11 @@
             }
             else
             {
-                throw new ApplicationException($"Unknown RecordDatabaseType ({infraOptions.RecordRepositoryMode})");
+                throw new ApplicationException($"Unknown RecordDatabaseType ({options.RecordRepositoryMode})");
             }
 
 
-            if (infraOptions.BlobRespositoryMode == BlobRespositoryMode.AzureStorage)
+            if (options.BlobRespositoryMode == BlobRespositoryMode.AzureStorage)
             {
                 services
                     .AddScoped<AzureStorageBlobRepository>()
@@ -105,11 +105,11 @@
                         serviceProvider =>
                         {
                             var instance = serviceProvider.GetRequiredService<AzureStorageBlobRepository>();
-                            instance.SetConnection(infraOptions.AzureStorageAccountConnection);
+                            instance.SetConnection(options.AzureStorageAccountConnection);
                             return instance;
                         });
             }
-            else if (infraOptions.BlobRespositoryMode == BlobRespositoryMode.FileSystem)
+            else if (options.BlobRespositoryMode == BlobRespositoryMode.FileSystem)
             {
                 services
                     .AddScoped<FileSystemBlobRepository>()
@@ -117,15 +117,14 @@
                         serviceProvider =>
                         {
                             var instance = serviceProvider.GetRequiredService<FileSystemBlobRepository>();
-                            instance.SetBasePath(infraOptions.FileSystemBlobBasePath);
+                            instance.SetBasePath(options.FileSystemBlobBasePath);
                             return instance;
                         });
             }
 
             return services
-                .AddLogging(options => options.AddSerilog(Log.Logger, dispose: true))
-                .AddSingleton(infraOptions)
-                .AddOrdersDomain(ordersDomainOptions);
+                .AddLogging(loggingOptions => loggingOptions.AddSerilog(Log.Logger, dispose: true))
+                .AddSingleton(options);
         }
 
         private static TOptions GetOptions<TOptions>(IConfiguration config) where TOptions : class, new()

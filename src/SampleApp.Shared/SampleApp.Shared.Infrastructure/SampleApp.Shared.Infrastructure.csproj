@@ -10,7 +10,6 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.6" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.7" />
         <PackageReference Include="MimeMapping" Version="1.0.1.26" />
-        <PackageReference Include="Ardalis.EFCore.Extensions" Version="1.1.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Cosmos" Version="3.1.6" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" PrivateAssets="all" Version="3.1.3" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.3" />
@@ -29,7 +28,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\SampleApp.Orders\SampleApp.Orders.Client\SampleApp.Orders.Client.csproj" />
-      <ProjectReference Include="..\..\SampleApp.Orders\SampleApp.Orders.Domain\SampleApp.Orders.Domain.csproj" />
       <ProjectReference Include="..\SampleApp.Shared.Abstractions\SampleApp.Shared.Abstractions.csproj" />
     </ItemGroup>
 

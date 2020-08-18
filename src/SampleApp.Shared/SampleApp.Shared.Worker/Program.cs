@@ -1,12 +1,10 @@
-﻿namespace SampleApp.Orders.Endpoint
+﻿namespace SampleApp.Shared.Worker
 {
     using System;
-    using System.Diagnostics;
     using System.IO;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Hosting;
-    using NServiceBus;
     using SampleApp.Orders.Client;
     using SampleApp.Orders.Domain;
     using SampleApp.Shared.Infrastructure;
@@ -65,24 +63,6 @@
                     .GetSection(typeof(TOptions).Namespace)
                     .Get<TOptions>()
                 ?? new TOptions();
-        }
-
-        private static async Task OnCriticalError(ICriticalErrorContext context)
-        {
-            var fatalMessage = "The following critical error was "
-                + $"encountered: {Environment.NewLine}{context.Error}{Environment.NewLine}Process is shutting down. "
-                + $"StackTrace: {Environment.NewLine}{context.Exception.StackTrace}";
-
-            EventLog.WriteEntry(".NET Runtime", fatalMessage, EventLogEntryType.Error);
-
-            try
-            {
-                await context.Stop().ConfigureAwait(false);
-            }
-            finally
-            {
-                Environment.FailFast(fatalMessage, context.Exception);
-            }
         }
     }
 }
