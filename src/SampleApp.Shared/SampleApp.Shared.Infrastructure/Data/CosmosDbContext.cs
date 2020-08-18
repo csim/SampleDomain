@@ -4,20 +4,19 @@
     using System.Threading.Tasks;
     using Ardalis.EFCore.Extensions;
     using Microsoft.EntityFrameworkCore;
-    
+    using SampleApp.Orders.Client.Records;
+
     public class CosmosDbContext : DbContext
     {
-        //private readonly IMediator _mediator;
-
-        //public AppDbContext(DbContextOptions options) : base(options)
-        //{
-        //}
-
         public CosmosDbContext(DbContextOptions<CosmosDbContext> options) //, IMediator mediator)
             : base(options)
         {
             //_mediator = mediator;
         }
+
+        public DbSet<OrderItemRecord> OrderItemss { get; set; }
+
+        public DbSet<OrderRecord> Orders { get; set; }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
@@ -49,15 +48,16 @@
         {
             base.OnModelCreating(modelBuilder);
 
-            //foreach (var recordType in SampleInfrastructureModule.RecordTypes)
-            //{
-            //    modelBuilder
-            //        .Entity(recordType)
-            //        .ToContainer(recordType.Name.Replace("Record", ""))
-            //        .HasPartitionKey("PartitionKey");
-            //}
+            foreach (var recordType in new[] { typeof(OrderRecord), typeof(OrderItemRecord) })
+            {
+                modelBuilder
+                    .Entity(recordType)
+                    .ToContainer(recordType.Name.Replace("Record", ""))
+                    .HasPartitionKey("PartitionKey")
+                    .HasKey("Id");
+            }
 
-            modelBuilder.ApplyAllConfigurationsFromCurrentAssembly();
+            //modelBuilder.ApplyAllConfigurationsFromCurrentAssembly();
 
             // alternately this is built-in to EF Core 2.2
             //modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());

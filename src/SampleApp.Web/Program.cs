@@ -7,6 +7,7 @@
     using Microsoft.Extensions.Hosting;
     using NServiceBus;
     using SampleApp.Orders.Client;
+    using Serilog;
 
     public class Program
     {
@@ -16,6 +17,7 @@
 
             var host = Host
                     .CreateDefaultBuilder(args)
+                    .UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration))
                     .UseNServiceBus(
                         ctx =>
                         {

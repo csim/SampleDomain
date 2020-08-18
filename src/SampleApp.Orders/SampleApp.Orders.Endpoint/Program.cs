@@ -11,22 +11,12 @@
     using SampleApp.Orders.Client;
     using SampleApp.Orders.Domain;
     using SampleApp.Shared.Infrastructure;
+    using SampleApp.Shared.Infrastructure.Data;
     using Serilog;
 
     public class Program
     {
         private static IConfigurationRoot _configuration;
-
-        public void ConfigureServices(IServiceCollection services)
-        {
-            var infraOptions = GetOptions<InfrastructureOptions>();
-            var domainOptions = GetOptions<OrdersDomainOptions>();
-
-            services
-                .AddSharedInfrastructure(infraOptions)
-                .AddOrdersDomain(domainOptions)
-                .AddLogging(options => options.AddSerilog(Log.Logger, dispose: true));
-        }
 
         public static async Task Main(string[] args)
         {
@@ -47,11 +37,22 @@
                 .AddJsonFile($"config/appsettings.{env}.secrets.json", optional: true, reloadOnChange: true)
                 .Build();
 
+            var infraOptions = GetOptions<InfrastructureOptions>();
+            var domainOptions = GetOptions<OrdersDomainOptions>();
+
             var host = Host
                 .CreateDefaultBuilder(args)
                 .UseConsoleLifetime()
                 .UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration.ReadFrom.Configuration(_configuration))
                 .ConfigureLogging((ctx, logging) => logging.AddSerilog(Log.Logger, dispose: true))
+                .ConfigureServices(
+                    services =>
+                    {
+                        services
+                            .AddSharedInfrastructure(infraOptions)
+                            .AddOrdersDomain(domainOptions)
+                            .AddLogging(options => options.AddSerilog(Log.Logger, dispose: true));
+                    })
                 .UseNServiceBus(
                     ctx =>
                     {
@@ -73,10 +74,16 @@
                     })
                 .Build();
 
+            if (infraOptions.RecordRepositoryMode == RecordRepositoryMode.Cosmos)
+            {
+                using var scope = host.Services.CreateScope();
+                await scope.ServiceProvider.GetRequiredService<CosmosDbContext>().Database.EnsureCreatedAsync();
+            }
+
             await host.RunAsync();
         }
 
-        private TOptions GetOptions<TOptions>() where TOptions : class, new()
+        private static TOptions GetOptions<TOptions>() where TOptions : class, new()
         {
             return _configuration
                     .GetSection(typeof(TOptions).Namespace)
