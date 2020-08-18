@@ -5,9 +5,7 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
-    using SampleApp.Shared.Infrastructure;
     using SampleApp.Web.Data;
-    using Serilog;
 
     public class Startup
     {
@@ -49,23 +47,11 @@
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            var infraOptions = GetOptions<InfrastructureOptions>();
-
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services
                 .AddScoped<OrdersService>()
-                .AddSingleton<WeatherForecastService>()
-                .AddLogging(options => options.AddSerilog(Log.Logger, dispose: true))
-                .AddSharedInfrastructure(infraOptions);
-        }
-
-        private TOptions GetOptions<TOptions>() where TOptions : class, new()
-        {
-            return _configuration
-                    .GetSection(typeof(TOptions).Namespace)
-                    .Get<TOptions>()
-                ?? new TOptions();
+                .AddSingleton<WeatherForecastService>();
         }
     }
 }

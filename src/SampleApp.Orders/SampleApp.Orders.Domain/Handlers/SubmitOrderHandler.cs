@@ -1,4 +1,4 @@
-﻿namespace SampleApp.Orders.Endpoint.Handlers
+﻿namespace SampleApp.Orders.Domain.Handlers
 {
     using System;
     using System.Threading.Tasks;
@@ -22,7 +22,7 @@
 
         public async Task Handle(SubmitOrderCommand message, IMessageHandlerContext context)
         {
-            _log.LogInformation(message.Number.ToString());
+            _log.LogInformation($"Handle SubmitOrderCommand {message.Number}");
 
             var id = Guid.NewGuid();
             var timeStamp = DateTime.UtcNow;

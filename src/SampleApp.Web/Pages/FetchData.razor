@@ -10,44 +10,51 @@
 
 @if (_orders == null)
 {
-     <p>
-          <em>Loading...</em>
-     </p>
+    <p>
+        <em>Loading...</em>
+    </p>
 }
 else
 {
-     <button class="btn btn-primary" @onclick="SubmitOrder">
-          New Order
-     </button>
-     <button class="btn btn-primary" @onclick="LoadOrders">
-          Load Orders
-     </button>
-     <br />
-     <br />
+    <button class="btn btn-primary" @onclick="SubmitOrder">
+        Submit Order
+    </button>
+    <button class="btn btn-primary" @onclick="LoadOrders">
+        Load Orders
+    </button>
+    <br/>
+    <br/>
 
-     <table class="table">
-          <thead>
-               <tr>
-                    <th>ID</th>
-                    <th>CreatedOn</th>
-                    <th>Number</th>
-               </tr>
-          </thead>
-          <tbody>
-               @foreach (var order in _orders)
-               {
-                    <tr>
-                         <td>@order.Id</td>
-                         <td>@order.CreatedOn?.ToShortDateString()</td>
-                         <td>@order.Number</td>
-                    </tr>
-               }
-          </tbody>
-     </table>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>CreatedOn</th>
+            <th>Number</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var order in _orders)
+        {
+            <tr>
+                <td>@order.Id</td>
+                <td>@order.CreatedOn?.ToShortDateString()</td>
+                <td>@order.Number</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+    <hr/>
+    <div>
+        @_orderId
+    </div>
 }
 
 @code {
      private IEnumerable<OrderRecord> _orders;
+
+     private string _orderId = "zzz";
 
      protected override async Task OnInitializedAsync()
      {
@@ -56,13 +63,17 @@ else
 
      private async Task SubmitOrder(MouseEventArgs e)
      {
-          await Orders.SubmitOrderAsync();
+          var response = await Orders.SubmitOrderAsync();
+
+          _orderId = response.Id.ToString();
+
           await LoadOrdersAsync();
      }
 
      private async Task LoadOrders(MouseEventArgs e)
      {
-          await LoadOrdersAsync();
+        _orderId = "";
+        await LoadOrdersAsync();
      }
 
      private async Task LoadOrdersAsync()

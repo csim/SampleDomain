@@ -1,37 +1,32 @@
 ﻿namespace SampleApp.Web
 {
     using System;
-    using System.Diagnostics;
-    using System.Threading.Tasks;
+    using System.IO;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Hosting;
-    using NServiceBus;
-    using SampleApp.Orders.Client;
-    using Serilog;
+    using SampleApp.Shared.Infrastructure;
 
     public class Program
     {
         public static void Main(string[] args)
         {
-            var ns = typeof(Program).Namespace;
+            if (args.Length > 0) Environment.SetEnvironmentVariable("SAMPLEAPP_ENVIRONMENT", args[0]);
+
+            var env = Environment.GetEnvironmentVariable("SAMPLEAPP_ENVIRONMENT") ?? "Development";
+            env = env.ToLower();
+
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddEnvironmentVariables("SAMPLEAPP_")
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env}.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"config/appsettings.{env}.secrets.json", optional: true, reloadOnChange: true)
+                .Build();
 
             var host = Host
                     .CreateDefaultBuilder(args)
-                    .UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration))
-                    .UseNServiceBus(
-                        ctx =>
-                        {
-                            var config = new EndpointConfiguration(ns);
-                            config.UseTransport<LearningTransport>();
-                            config.DefineCriticalErrorAction(OnCriticalError);
-
-                            config
-                                .UseTransport<LearningTransport>()
-                                .Routing()
-                                .AddOrdersClient();
-
-                            return config;
-                        })
+                    .AddSharedInfrastructure(configuration, typeof(Program).Namespace)
                     .ConfigureWebHostDefaults(
                         webBuilder =>
                         {
@@ -40,24 +35,6 @@
                 ;
 
             host.Build().Run();
-        }
-
-        private static async Task OnCriticalError(ICriticalErrorContext context)
-        {
-            var fatalMessage = "The following critical error was "
-                + $"encountered: {Environment.NewLine}{context.Error}{Environment.NewLine}Process is shutting down. "
-                + $"StackTrace: {Environment.NewLine}{context.Exception.StackTrace}";
-
-            EventLog.WriteEntry(".NET Runtime", fatalMessage, EventLogEntryType.Error);
-
-            try
-            {
-                await context.Stop().ConfigureAwait(false);
-            }
-            finally
-            {
-                Environment.FailFast(fatalMessage, context.Exception);
-            }
         }
     }
 }

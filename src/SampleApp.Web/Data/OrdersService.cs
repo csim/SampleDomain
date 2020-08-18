@@ -12,7 +12,7 @@
     using SampleApp.Orders.Client.Records;
     using SampleApp.Shared.Abstractions;
 
-    public class OrdersService : IHandleMessages<SubmitOrderResponse>
+    public class OrdersService
     {
         public OrdersService(ILogger<OrdersService> log, IServiceProvider serviceProvider)
         {
@@ -30,14 +30,7 @@
             return await repo.AsQueryable<OrderRecord>().ToListAsync();
         }
 
-        public Task Handle(SubmitOrderResponse response, IMessageHandlerContext context)
-        {
-            _log.LogInformation($"Handle SubmitOrderResponse {response.Id}");
-
-            return Task.CompletedTask;
-        }
-
-        public async Task SubmitOrderAsync()
+        public async Task<SubmitOrderResponse> SubmitOrderAsync()
         {
             var command = new SubmitOrderCommand { Number = DateTime.Now.Ticks };
 
@@ -45,7 +38,7 @@
 
             var messageSession = _serviceProvider.GetRequiredService<IMessageSession>();
 
-            await messageSession.Send(command);
+            return await messageSession.Request<SubmitOrderResponse>(command);
         }
     }
 }

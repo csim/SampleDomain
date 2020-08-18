@@ -5,14 +5,11 @@
     using System.IO;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using NServiceBus;
     using SampleApp.Orders.Client;
     using SampleApp.Orders.Domain;
     using SampleApp.Shared.Infrastructure;
-    using SampleApp.Shared.Infrastructure.Data;
-    using Serilog;
 
     public class Program
     {
@@ -25,9 +22,8 @@
             var env = Environment.GetEnvironmentVariable("SAMPLEAPP_ENVIRONMENT") ?? "Development";
             env = env.ToLower();
 
-            var messageModule = typeof(OrdersClientModule);
-            var ns = messageModule.Namespace;
-            if (!string.IsNullOrEmpty(ns)) Console.Title = $"{ns} [{env}]";
+            var endpointName = typeof(Program).Namespace;
+            if (!string.IsNullOrEmpty(endpointName)) Console.Title = $"{endpointName} [{env}]";
 
             _configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
@@ -37,35 +33,19 @@
                 .AddJsonFile($"config/appsettings.{env}.secrets.json", optional: true, reloadOnChange: true)
                 .Build();
 
-            var infraOptions = GetOptions<InfrastructureOptions>();
-            var domainOptions = GetOptions<OrdersDomainOptions>();
+            var ordersDomainOptions = GetOptions<OrdersDomainOptions>(_configuration);
+            var ordersClientOptions = GetOptions<OrdersClientOptions>(_configuration);
 
             var host = Host
                 .CreateDefaultBuilder(args)
                 .UseConsoleLifetime()
-                .UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration.ReadFrom.Configuration(_configuration))
-                .ConfigureLogging((ctx, logging) => logging.AddSerilog(Log.Logger, dispose: true))
+                .AddSharedInfrastructure(_configuration, endpointName)
                 .ConfigureServices(
                     services =>
                     {
                         services
-                            .AddSharedInfrastructure(infraOptions)
-                            .AddOrdersDomain(domainOptions)
-                            .AddLogging(options => options.AddSerilog(Log.Logger, dispose: true));
-                    })
-                .UseNServiceBus(
-                    ctx =>
-                    {
-                        var config = new EndpointConfiguration(ns);
-
-                        config.DefineCriticalErrorAction(OnCriticalError);
-
-                        config
-                            .UseTransport<LearningTransport>()
-                            .Routing()
-                            .AddOrdersClient();
-
-                        return config;
+                            .AddOrdersDomain(ordersDomainOptions)
+                            .AddOrdersClient(ordersClientOptions);
                     })
                 .ConfigureAppConfiguration(
                     (hostingContext, builder) =>
@@ -74,18 +54,14 @@
                     })
                 .Build();
 
-            if (infraOptions.RecordRepositoryMode == RecordRepositoryMode.Cosmos)
-            {
-                using var scope = host.Services.CreateScope();
-                await scope.ServiceProvider.GetRequiredService<CosmosDbContext>().Database.EnsureCreatedAsync();
-            }
+            InfrastructureModule.Initialize(host, _configuration);
 
             await host.RunAsync();
         }
 
-        private static TOptions GetOptions<TOptions>() where TOptions : class, new()
+        private static TOptions GetOptions<TOptions>(IConfiguration config) where TOptions : class, new()
         {
-            return _configuration
+            return config
                     .GetSection(typeof(TOptions).Namespace)
                     .Get<TOptions>()
                 ?? new TOptions();
