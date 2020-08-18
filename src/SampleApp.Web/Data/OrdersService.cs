@@ -7,7 +7,6 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using NServiceBus;
-    using SampleApp.Orders.Client;
     using SampleApp.Orders.Client.Commands;
     using SampleApp.Orders.Client.Records;
     using SampleApp.Shared.Abstractions;

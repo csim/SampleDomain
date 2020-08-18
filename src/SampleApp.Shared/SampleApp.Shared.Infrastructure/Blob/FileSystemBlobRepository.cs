@@ -11,15 +11,66 @@
     {
         private string _basePath;
 
-        public void Delete(string filePath)
+        public bool BlobExists(string containerName, string fileName)
         {
-            DeleteAsync(filePath).GetAwaiter().GetResult();
+            return BlobExistsAsync(containerName, fileName).GetAwaiter().GetResult();
         }
 
-        public Task DeleteAsync(string filePath)
+        public Task<bool> BlobExistsAsync(string containerName, string fileName)
         {
-            if (string.IsNullOrEmpty(filePath)) throw new ArgumentException("Value cannot be null or empty.", nameof(filePath));
+            if (string.IsNullOrEmpty(containerName)) throw new ArgumentException("Value cannot be null or empty.", nameof(containerName));
+            if (string.IsNullOrEmpty(fileName)) throw new ArgumentException("Value cannot be null or empty.", nameof(fileName));
 
+            var filePath = FilePath(containerName, fileName);
+            var ret = !File.Exists(filePath);
+
+            return Task.FromResult(ret);
+        }
+
+        public StorageBlobInfo BlobInfo(string containerName, string fileName)
+        {
+            return BlobInfoAsync(containerName, fileName).GetAwaiter().GetResult();
+        }
+
+        public Task<StorageBlobInfo> BlobInfoAsync(string containerName, string fileName)
+        {
+            if (string.IsNullOrEmpty(containerName)) throw new ArgumentException("Value cannot be null or empty.", nameof(containerName));
+            if (string.IsNullOrEmpty(fileName)) throw new ArgumentException("Value cannot be null or empty.", nameof(fileName));
+
+            var filePath = FilePath(containerName, fileName);
+            var fileInfo = new FileInfo(filePath);
+
+            var ret = new StorageBlobInfo
+            {
+                Container = new StorageBlobContainerInfo { Name = containerName, Uri = new Uri($"file://{containerName}") },
+                ContentType = MimeUtility.GetMimeMapping(fileName),
+                Filename = fileName,
+                Size = fileInfo.Length,
+                Uri = new Uri($"file://{containerName}/{fileName}"),
+                AbsoluteUri = $"file://{containerName}/{fileName}"
+            };
+
+            return Task.FromResult(ret);
+        }
+
+        public StorageBlobContainerInfo ContainerInfo(string name)
+        {
+            if (string.IsNullOrEmpty(name)) throw new ArgumentException("Value cannot be null or empty.", nameof(name));
+
+            throw new NotImplementedException();
+        }
+
+        public void DeleteBlob(string containerName, string fileName)
+        {
+            DeleteBlobAsync(containerName, fileName).GetAwaiter().GetResult();
+        }
+
+        public Task DeleteBlobAsync(string containerName, string fileName)
+        {
+            if (string.IsNullOrEmpty(containerName)) throw new ArgumentException("Value cannot be null or empty.", nameof(containerName));
+            if (string.IsNullOrEmpty(fileName)) throw new ArgumentException("Value cannot be null or empty.", nameof(fileName));
+
+            var filePath = FilePath(containerName, fileName);
             File.Delete(filePath);
 
             var dir = Directory.GetParent(filePath);
@@ -27,6 +78,7 @@
 
             while (true)
             {
+                if (string.Equals(dir.Name, containerName, StringComparison.CurrentCultureIgnoreCase)) break;
                 if (string.Equals(dir.FullName, _basePath, StringComparison.CurrentCultureIgnoreCase)) break;
 
                 var fileCount = Directory.GetFiles(dirFullName).Length;
@@ -40,83 +92,71 @@
             return Task.FromResult(true);
         }
 
-        public bool Exists(string filePath)
+        public StorageBlobContainerInfo EnsureContainer(string containerName)
         {
-            return ExistsAsync(filePath).GetAwaiter().GetResult();
+            return EnsureContainerAsync(containerName).GetAwaiter().GetResult();
         }
 
-        public Task<bool> ExistsAsync(string filePath)
+        public Task<StorageBlobContainerInfo> EnsureContainerAsync(string containerName)
         {
-            if (string.IsNullOrEmpty(filePath)) throw new ArgumentException("Value cannot be null or empty.", nameof(filePath));
+            if (string.IsNullOrEmpty(containerName)) throw new ArgumentException("Value cannot be null or empty.", nameof(containerName));
 
-            filePath = ExpandFilePath(filePath);
-            var ret = !File.Exists(filePath);
+            var path = Path.Combine(_basePath, containerName);
+            Console.WriteLine(path);
+            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+
+            var ret = new StorageBlobContainerInfo { Name = containerName, Uri = new Uri($"file://{containerName}") };
 
             return Task.FromResult(ret);
         }
 
-        public StorageBlobInfo Info(string filePath)
+        public byte[] ReadBlob(string containerName, string fileName)
         {
-            return InfoAsync(filePath).GetAwaiter().GetResult();
+            return ReadBlobAsync(containerName, fileName).GetAwaiter().GetResult();
         }
 
-        public Task<StorageBlobInfo> InfoAsync(string filePath)
+        public Stream ReadBlobAsStream(string containerName, string fileName)
         {
-            if (string.IsNullOrEmpty(filePath)) throw new ArgumentException("Value cannot be null or empty.", nameof(filePath));
-
-            filePath = ExpandFilePath(filePath);
-            var fileInfo = new FileInfo(filePath);
-
-            var ret = new StorageBlobInfo
-            {
-                ContentType = MimeUtility.GetMimeMapping(filePath), Filename = filePath, Size = fileInfo.Length, Uri = new Uri($"file://{filePath}"),
-            };
-
-            return Task.FromResult(ret);
+            return ReadBlobAsStreamAsync(containerName, fileName).GetAwaiter().GetResult();
         }
 
-        public byte[] Read(string filePath)
+        public Task<Stream> ReadBlobAsStreamAsync(string containerName, string fileName)
         {
-            return ReadAsync(filePath).GetAwaiter().GetResult();
-        }
+            if (string.IsNullOrEmpty(containerName)) throw new ArgumentException("Value cannot be null or empty.", nameof(containerName));
+            if (string.IsNullOrEmpty(fileName)) throw new ArgumentException("Value cannot be null or empty.", nameof(fileName));
 
-        public Stream ReadAsStream(string filePath)
-        {
-            return ReadAsStreamAsync(filePath).GetAwaiter().GetResult();
-        }
-
-        public Task<Stream> ReadAsStreamAsync(string filePath)
-        {
-            if (string.IsNullOrEmpty(filePath)) throw new ArgumentException("Value cannot be null or empty.", nameof(filePath));
-
-            filePath = ExpandFilePath(filePath);
-            if (!File.Exists(filePath)) throw new FileNotFoundException($"File does not exists ({filePath})");
+            var filePath = FilePath(containerName, fileName);
+            if (!File.Exists(filePath)) throw new ApplicationException($"File does not exists ({fileName})");
 
             return Task.FromResult((Stream)File.OpenRead(filePath));
         }
 
-        public string ReadAsString(string filePath, Encoding encoding = null)
+        public string ReadBlobAsString(string containerName, string fileName, Encoding encoding = null)
         {
-            return ReadAsStringAsync(filePath, encoding).GetAwaiter().GetResult();
+            if (string.IsNullOrEmpty(containerName)) throw new ArgumentException("Value cannot be null or empty.", nameof(containerName));
+            if (string.IsNullOrEmpty(fileName)) throw new ArgumentException("Value cannot be null or empty.", nameof(fileName));
+
+            throw new NotImplementedException();
         }
 
-        public Task<string> ReadAsStringAsync(string filePath, Encoding encoding = null)
+        public Task<string> ReadBlobAsStringAsync(string containerName, string fileName, Encoding encoding = null)
         {
-            encoding ??= Encoding.UTF8;
-            if (string.IsNullOrEmpty(filePath)) throw new ArgumentException("Value cannot be null or empty.", nameof(filePath));
+            if (string.IsNullOrEmpty(containerName)) throw new ArgumentException("Value cannot be null or empty.", nameof(containerName));
+            if (string.IsNullOrEmpty(fileName)) throw new ArgumentException("Value cannot be null or empty.", nameof(fileName));
 
-            filePath = ExpandFilePath(filePath);
-            if (!File.Exists(filePath)) throw new FileNotFoundException($"File does not exists ({filePath})");
+            var filePath = FilePath(containerName, fileName);
+            if (!File.Exists(filePath)) throw new ApplicationException($"File does not exists ({fileName})");
 
-            return Task.FromResult(File.ReadAllText(filePath, encoding));
+            return Task.FromResult(File.ReadAllText(filePath));
         }
 
-        public Task<byte[]> ReadAsync(string filePath)
+        public Task<byte[]> ReadBlobAsync(string containerName, string fileName)
         {
-            if (string.IsNullOrEmpty(filePath)) throw new ArgumentException("Value cannot be null or empty.", nameof(filePath));
+            if (string.IsNullOrEmpty(containerName)) throw new ArgumentException("Value cannot be null or empty.", nameof(containerName));
+            if (string.IsNullOrEmpty(fileName)) throw new ArgumentException("Value cannot be null or empty.", nameof(fileName));
 
-            filePath = ExpandFilePath(filePath);
-            if (!File.Exists(filePath)) throw new FileNotFoundException($"File does not exists ({filePath})");
+            var filePath = FilePath(containerName, fileName);
+            if (!File.Exists(filePath)) throw new ApplicationException($"File does not exists ({fileName})");
 
             return Task.FromResult(File.ReadAllBytes(filePath));
         }
@@ -128,49 +168,63 @@
             _basePath = basePath;
         }
 
-        public void Write(string filePath, string content, bool overwrite = false)
+        public void WriteBlob(string containerName, string fileName, string content, bool overwrite = false)
         {
-            WriteAsync(filePath, content, Encoding.UTF8, overwrite).GetAwaiter().GetResult();
+            throw new NotImplementedException();
         }
 
-        public void Write(string filePath, string content, Encoding encoding, bool overwrite = false)
+        public void WriteBlob(string containerName, string fileName, string content, Encoding encoding, bool overwrite = false)
         {
-            WriteAsync(filePath, content, encoding, overwrite).GetAwaiter().GetResult();
+            throw new NotImplementedException();
         }
 
-        public void Write(string filePath, Stream stream, bool overwrite = false)
+        public void WriteBlob(string containerName, string fileName, Stream stream, bool overwrite = false)
         {
-            WriteAsync(filePath, stream, overwrite).GetAwaiter().GetResult();
+            WriteBlobAsync(containerName, fileName, stream, overwrite).GetAwaiter().GetResult();
         }
 
-        public void Write(string filePath, byte[] content, bool overwrite = false)
+        public void WriteBlob(string containerName, string fileName, byte[] content, bool overwrite = false)
         {
-            WriteAsync(filePath, content, overwrite).GetAwaiter().GetResult();
+            WriteBlobAsync(containerName, fileName, content, overwrite).GetAwaiter().GetResult();
         }
 
-        public Task WriteAsync(string filePath, string content, bool overwrite = false)
+        public Task WriteBlobAsync(string containerName, string fileName, string content, bool overwrite = false)
         {
-            return WriteAsync(filePath, content, Encoding.UTF8, overwrite);
+            return WriteBlobAsync(containerName, fileName, content, Encoding.UTF8, overwrite);
         }
 
-        public async Task WriteAsync(string filePath, string content, Encoding encoding, bool overwrite = false)
+        public async Task WriteBlobAsync(string containerName, string fileName, string content, Encoding encoding, bool overwrite = false)
         {
-            if (string.IsNullOrEmpty(filePath)) throw new ArgumentException("Value cannot be null or empty.", nameof(filePath));
+            if (string.IsNullOrEmpty(containerName)) throw new ArgumentException("Value cannot be null or empty.", nameof(containerName));
+            if (string.IsNullOrEmpty(fileName)) throw new ArgumentException("Value cannot be null or empty.", nameof(fileName));
             if (content == null) throw new ArgumentNullException(nameof(content));
-            encoding ??= Encoding.UTF8;
+            if (encoding == null) throw new ArgumentNullException(nameof(encoding));
 
             var bcontent = encoding.GetBytes(content.ToCharArray());
 
-            await WriteAsync(filePath, bcontent, overwrite);
+            await WriteBlobAsync(containerName, fileName, bcontent, overwrite);
         }
 
-        public Task WriteAsync(string filePath, Stream stream, bool overwrite = false)
+        public Task WriteBlobAsync(string containerName, string fileName, Stream stream, bool overwrite = false)
         {
-            if (string.IsNullOrEmpty(filePath)) throw new ArgumentException("Value cannot be null or empty.", nameof(filePath));
+            if (string.IsNullOrEmpty(containerName)) throw new ArgumentException("Value cannot be null or empty.", nameof(containerName));
+            if (string.IsNullOrEmpty(fileName)) throw new ArgumentException("Value cannot be null or empty.", nameof(fileName));
 
-            if (File.Exists(filePath) && !overwrite) throw new ApplicationException($"File already exists ({filePath})");
+            var filePath = FilePath(containerName, fileName);
 
-            EnsureDirectory(filePath);
+            if (File.Exists(filePath))
+            {
+                if (overwrite)
+                {
+                    File.Exists(filePath);
+                }
+                else
+                {
+                    throw new ApplicationException($"File already exists ({fileName})");
+                }
+            }
+
+            EnsureFilePath(filePath);
             using var fileStream = File.Create(filePath);
 
             byte[] buffer = new byte[8 * 1024];
@@ -183,29 +237,43 @@
             return Task.CompletedTask;
         }
 
-        public Task WriteAsync(string filePath, byte[] content, bool overwrite = false)
+        public Task WriteBlobAsync(string containerName, string fileName, byte[] content, bool overwrite = false)
         {
-            if (string.IsNullOrEmpty(filePath)) throw new ArgumentException("Value cannot be null or empty.", nameof(filePath));
+            if (string.IsNullOrEmpty(containerName)) throw new ArgumentException("Value cannot be null or empty.", nameof(containerName));
+            if (string.IsNullOrEmpty(fileName)) throw new ArgumentException("Value cannot be null or empty.", nameof(fileName));
 
-            filePath = ExpandFilePath(filePath);
+            var filePath = FilePath(containerName, fileName);
 
-            if (File.Exists(filePath) && !overwrite) throw new ApplicationException($"File already exists ({filePath})");
+            if (File.Exists(filePath))
+            {
+                if (overwrite)
+                {
+                    File.Exists(filePath);
+                }
+                else
+                {
+                    throw new ApplicationException($"File already exists ({fileName})");
+                }
+            }
 
-            EnsureDirectory(filePath);
+            EnsureFilePath(filePath);
             File.WriteAllBytes(filePath, content);
 
             return Task.CompletedTask;
         }
 
-        private static void EnsureDirectory(string filePath)
+        private void EnsureFilePath(string fileName)
         {
-            var parentDir = Directory.GetParent(filePath).FullName;
+            var parentDir = Directory.GetParent(fileName).FullName;
             if (!Directory.Exists(parentDir)) Directory.CreateDirectory(parentDir);
         }
 
-        private string ExpandFilePath(string filePath)
+        private string FilePath(string containerName, string fileName)
         {
-            return Path.Combine(_basePath, filePath);
+            var containerPath = Path.Combine(_basePath, containerName);
+            if (!Directory.Exists(containerPath)) throw new ApplicationException($"Container does not exist ({containerName})");
+
+            return Path.Combine(containerPath, fileName);
         }
     }
 }
