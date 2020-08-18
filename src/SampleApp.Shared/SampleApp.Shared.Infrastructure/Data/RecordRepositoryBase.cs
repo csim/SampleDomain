@@ -45,13 +45,6 @@
             return record;
         }
 
-        public void AddEvent<TRecord>(TRecord record, IRecordEvent recordEvent) where TRecord : RecordBase
-        {
-            record.Id ??= Guid.NewGuid();
-
-            //Events.Add(record.Id.Value, recordEvent);
-        }
-
         public virtual IQueryable<T> AsQueryable<T>() where T : RecordBase
         {
             return DbContext

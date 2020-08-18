@@ -17,8 +17,9 @@
             _log = log;
         }
 
-        private readonly IRecordRepository _repository;
         private readonly ILogger<SubmitOrderHandler> _log;
+
+        private readonly IRecordRepository _repository;
 
         public async Task Handle(SubmitOrderCommand message, IMessageHandlerContext context)
         {
@@ -27,12 +28,7 @@
             var id = Guid.NewGuid();
             var timeStamp = DateTime.UtcNow;
 
-            _repository.Add(new OrderRecord
-            {
-                Id = id,
-                Number = message.Number,
-                PartitionKey = "Customer1"
-            });
+            _repository.Add(new OrderRecord { Id = id, Number = message.Number, PartitionKey = "Customer1" });
 
             _log.LogInformation($"Publish OrderSubmittedEvent {id}");
             await context.Publish(new OrderSubmittedEvent { Id = id, Timestamp = timeStamp });

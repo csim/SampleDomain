@@ -19,10 +19,7 @@
         {
             var workerEndpointName = "SampleApp.Shared.Worker";
 
-            var routeTable = new[]
-            {
-                new { EndpointName = workerEndpointName, typeof(OrdersClientModule).Assembly }
-            };
+            var routeTable = new[] { new { EndpointName = workerEndpointName, typeof(OrdersClientModule).Assembly } };
 
             return hostBuilder
                 .UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration))

@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
@@ -26,7 +27,11 @@
         {
             var repo = _serviceProvider.GetRequiredService<IRecordRepository>();
 
-            return await repo.AsQueryable<OrderRecord>().ToListAsync();
+            return await repo
+                .AsQueryable<OrderRecord>()
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
         }
 
         public async Task<SubmitOrderResponse> SubmitOrderAsync()
