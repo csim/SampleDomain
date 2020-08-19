@@ -38,11 +38,15 @@
         {
             var command = new SubmitOrderCommand { Number = DateTime.Now.Ticks };
 
-            _log.LogInformation($"SubmitOrderCommand SubmitOrderResponse {command.Number}");
+            _log.LogInformation($"SubmitOrderCommand {command.Number}");
 
             var messageSession = _serviceProvider.GetRequiredService<IMessageSession>();
 
-            return await messageSession.Request<SubmitOrderResponse>(command);
+            var response = await messageSession.Request<SubmitOrderResponse>(command);
+
+            _log.LogInformation($"SubmitOrderResponse {response.Id}");
+
+            return response;
         }
     }
 }
