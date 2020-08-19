@@ -6,6 +6,8 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using SampleApp.Orders.Client;
+    using SampleApp.Orders.Domain;
     using SampleApp.Shared.Infrastructure;
     using SampleApp.Web.Data;
 
@@ -26,6 +28,9 @@
                 .AddJsonFile($"config/appsettings.{env}.secrets.json", optional: true, reloadOnChange: true)
                 .Build();
 
+            var ordersDomainOptions = GetOptions<OrdersDomainOptions>(configuration);
+            var ordersClientOptions = GetOptions<OrdersClientOptions>(configuration);
+
             var host = Host
                 .CreateDefaultBuilder(args)
                 .AddSharedInfrastructure(configuration, typeof(Program).Namespace)
@@ -34,7 +39,9 @@
                     {
                         services
                             .AddScoped<OrdersService>()
-                            .AddSingleton<WeatherForecastService>();
+                            .AddSingleton<WeatherForecastService>()
+                            .AddOrdersDomain(ordersDomainOptions)
+                            .AddOrdersClient(ordersClientOptions);
                     })
                 .ConfigureWebHostDefaults(
                     webBuilder =>
@@ -46,6 +53,13 @@
             InfrastructureModule.Initialize(host, configuration);
 
             host.Run();
+        }
+        private static TOptions GetOptions<TOptions>(IConfiguration config) where TOptions : class, new()
+        {
+            return config
+                    .GetSection(typeof(TOptions).Namespace)
+                    .Get<TOptions>()
+                ?? new TOptions();
         }
     }
 }
