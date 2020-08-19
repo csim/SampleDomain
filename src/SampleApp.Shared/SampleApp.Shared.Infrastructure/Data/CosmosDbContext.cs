@@ -1,6 +1,5 @@
 ﻿namespace SampleApp.Shared.Infrastructure.Data
 {
-    using System;
     using System.Linq;
     using System.Reflection;
     using System.Threading;
@@ -50,18 +49,16 @@
             base.OnModelCreating(modelBuilder);
 
             var recordBaseType = typeof(RecordBase);
-            var assemblies = new[] { typeof(OrdersClientModule).Assembly };
-            
-            foreach (Assembly assembly in assemblies)
+            var scanAssemblies = new[] { typeof(OrdersClientModule).Assembly };
+
+            foreach (Assembly assembly in scanAssemblies)
             {
-                Console.WriteLine(assembly.FullName);
                 var recordTypes = assembly
                     .GetTypes()
                     .Where(t => t.Name != recordBaseType.Name && recordBaseType.IsAssignableFrom(t));
 
                 foreach (var recordType in recordTypes)
                 {
-                    Console.WriteLine(recordType.FullName);
                     modelBuilder
                         .Entity(recordType)
                         .ToContainer(recordType.Name.Replace("Record", ""))
