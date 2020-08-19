@@ -5,7 +5,6 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using NServiceBus;
     using SampleApp.Orders.Client.Commands;
@@ -22,8 +21,8 @@
         }
 
         private readonly ILogger<OrdersService> _log;
-        private readonly IRecordRepository _repository;
         private readonly IMessageSession _messageSession;
+        private readonly IRecordRepository _repository;
 
         public async Task<IEnumerable<OrderRecord>> Orders(int skip = 0, int take = 10000)
         {
