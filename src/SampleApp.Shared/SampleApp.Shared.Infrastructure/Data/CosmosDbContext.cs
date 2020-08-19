@@ -1,9 +1,13 @@
 ﻿namespace SampleApp.Shared.Infrastructure.Data
 {
+    using System;
+    using System.Linq;
+    using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
-    using SampleApp.Orders.Client.Records;
+    using SampleApp.Orders.Client;
+    using SampleApp.Shared.Abstractions;
 
     public class CosmosDbContext : DbContext
     {
@@ -45,13 +49,25 @@
         {
             base.OnModelCreating(modelBuilder);
 
-            foreach (var recordType in new[] { typeof(OrderRecord), typeof(OrderItemRecord), typeof(OrderAuditRecord) })
+            var recordBaseType = typeof(RecordBase);
+            var assemblies = new[] { typeof(OrdersClientModule).Assembly };
+            
+            foreach (Assembly assembly in assemblies)
             {
-                modelBuilder
-                    .Entity(recordType)
-                    .ToContainer(recordType.Name.Replace("Record", ""))
-                    .HasPartitionKey("PartitionKey")
-                    .HasKey("Id");
+                Console.WriteLine(assembly.FullName);
+                var recordTypes = assembly
+                    .GetTypes()
+                    .Where(t => t.Name != recordBaseType.Name && recordBaseType.IsAssignableFrom(t));
+
+                foreach (var recordType in recordTypes)
+                {
+                    Console.WriteLine(recordType.FullName);
+                    modelBuilder
+                        .Entity(recordType)
+                        .ToContainer(recordType.Name.Replace("Record", ""))
+                        .HasPartitionKey("PartitionKey")
+                        .HasKey("Id");
+                }
             }
         }
     }

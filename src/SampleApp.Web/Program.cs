@@ -32,9 +32,11 @@
                         {
                             webBuilder.UseStartup<Startup>();
                         })
-                ;
+                    .Build();
 
-            host.Build().Run();
+            InfrastructureModule.Initialize(host, configuration);
+
+            host.Run();
         }
     }
 }

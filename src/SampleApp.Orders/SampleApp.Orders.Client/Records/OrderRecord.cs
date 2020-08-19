@@ -2,13 +2,14 @@
 {
     using System;
     using System.Collections.Generic;
+    using Microsoft.EntityFrameworkCore;
     using NServiceBus;
     using SampleApp.Orders.Client.Events;
     using SampleApp.Shared.Abstractions;
 
     public class OrderRecord : RecordBase
     {
-        public ICollection<OrderItemRecord> Items { get; set; } = new List<OrderItemRecord>();
+        public ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
 
         public long Number { get; set; }
 
@@ -28,5 +29,17 @@
         {
             return new OrderRecordUpdatedEvent { Record = this };
         }
+    }
+
+    [Owned]
+    public class OrderItem
+    {
+        public decimal Price { get; set; }
+
+        public CompactProductRecord Product { get; set; }
+
+        public Guid ProductId { get; set; }
+
+        public int Quantity { get; set; }
     }
 }
