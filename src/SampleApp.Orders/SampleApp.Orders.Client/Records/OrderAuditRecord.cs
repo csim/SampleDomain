@@ -10,10 +10,17 @@
         public OrderShadow Record { get; set; }
 
         public RecordTransactionType TransactionType { get; set; }
+
+        public string TransactionTypeName
+        {
+            get { return TransactionType.ToString(); }
+            // ReSharper disable once ValueParameterNotUsed
+            set { }
+        }
     }
 
-    [AutoMap(typeof(OrderRecord))]
     [Owned]
+    [AutoMap(typeof(OrderRecord))]
     public class OrderShadow
     {
         public DateTime? CreatedOn { get; set; }

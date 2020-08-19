@@ -4,8 +4,10 @@
     using System.IO;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using SampleApp.Shared.Infrastructure;
+    using SampleApp.Web.Data;
 
     public class Program
     {
@@ -25,14 +27,21 @@
                 .Build();
 
             var host = Host
-                    .CreateDefaultBuilder(args)
-                    .AddSharedInfrastructure(configuration, typeof(Program).Namespace)
-                    .ConfigureWebHostDefaults(
-                        webBuilder =>
-                        {
-                            webBuilder.UseStartup<Startup>();
-                        })
-                    .Build();
+                .CreateDefaultBuilder(args)
+                .AddSharedInfrastructure(configuration, typeof(Program).Namespace)
+                .ConfigureServices(
+                    services =>
+                    {
+                        services
+                            .AddScoped<OrdersService>()
+                            .AddSingleton<WeatherForecastService>();
+                    })
+                .ConfigureWebHostDefaults(
+                    webBuilder =>
+                    {
+                        webBuilder.UseStartup<Startup>();
+                    })
+                .Build();
 
             InfrastructureModule.Initialize(host, configuration);
 

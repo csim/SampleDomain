@@ -28,8 +28,6 @@
         {
             _log.LogInformation($"Handle {message.GetType().Name}");
 
-            message.Record.Id = Guid.NewGuid();
-
             var shadow = _mapper.Map<OrderShadow>(message.Record);
 
             await _repository.AddAsync(new OrderAuditRecord { Record = shadow, TransactionType = RecordTransactionType.Add, PartitionKey = "Customer1" });

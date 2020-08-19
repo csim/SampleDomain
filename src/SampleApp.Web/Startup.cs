@@ -40,9 +40,6 @@
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services
-                .AddScoped<OrdersService>()
-                .AddSingleton<WeatherForecastService>();
         }
     }
 }
