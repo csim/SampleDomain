@@ -1,5 +1,6 @@
 ﻿namespace SampleApp.Shared.Infrastructure.Data
 {
+    using System;
     using System.Linq;
     using System.Reflection;
     using System.Threading;

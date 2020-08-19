@@ -7,6 +7,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using NServiceBus;
+    using NServiceBus.Features;
     using SampleApp.Orders.Client;
     using SampleApp.Shared.Abstractions;
     using SampleApp.Shared.Infrastructure.Blob;
@@ -37,6 +38,7 @@
                         var config = new EndpointConfiguration(endpointName);
                         config.DefineCriticalErrorAction(OnCriticalError);
                         config.MakeInstanceUniquelyAddressable(Guid.NewGuid().ToString("N"));
+                        //config.DisableFeature<AutoSubscribe>();
                         config.EnableCallbacks();
 
                         var routing = config

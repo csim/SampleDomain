@@ -7,7 +7,6 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using SampleApp.Orders.Client;
-    using SampleApp.Orders.Domain;
     using SampleApp.Shared.Infrastructure;
     using SampleApp.Web.Data;
 
@@ -28,7 +27,6 @@
                 .AddJsonFile($"config/appsettings.{env}.secrets.json", optional: true, reloadOnChange: true)
                 .Build();
 
-            var ordersDomainOptions = GetOptions<OrdersDomainOptions>(configuration);
             var ordersClientOptions = GetOptions<OrdersClientOptions>(configuration);
 
             var host = Host
@@ -40,7 +38,6 @@
                         services
                             .AddScoped<OrdersService>()
                             .AddSingleton<WeatherForecastService>()
-                            .AddOrdersDomain(ordersDomainOptions)
                             .AddOrdersClient(ordersClientOptions);
                     })
                 .ConfigureWebHostDefaults(

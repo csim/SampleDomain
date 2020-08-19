@@ -15,19 +15,19 @@
 
         public decimal Total { get; set; }
 
-        public override IEvent AddedEvent()
+        public override IMessage[] AddedMessages()
         {
-            return new OrderRecordAddedEvent { Record = this };
+            return new IMessage[] { new OrderRecordAuditCommand { Record = this, TransactionType = RecordTransactionType.Add } };
         }
 
-        public override IEvent DeletedEvent()
+        public override IMessage[] DeletedMessages()
         {
-            return new OrderRecordDeletedEvent { Record = this };
+            return new IMessage[] { new OrderRecordAuditCommand { Record = this, TransactionType = RecordTransactionType.Delete } };
         }
 
-        public override IEvent UpdatedEvent()
+        public override IMessage[] UpdatedMessages()
         {
-            return new OrderRecordUpdatedEvent { Record = this };
+            return new IMessage[] { new OrderRecordAuditCommand { Record = this, TransactionType = RecordTransactionType.Update } };
         }
     }
 

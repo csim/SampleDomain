@@ -15,17 +15,17 @@
 
         public string PartitionKey { get; set; }
 
-        public virtual IEvent AddedEvent()
+        public virtual IMessage[] AddedMessages()
         {
             return null;
         }
 
-        public virtual IEvent DeletedEvent()
+        public virtual IMessage[] DeletedMessages()
         {
             return null;
         }
 
-        public virtual IEvent UpdatedEvent()
+        public virtual IMessage[] UpdatedMessages()
         {
             return null;
         }

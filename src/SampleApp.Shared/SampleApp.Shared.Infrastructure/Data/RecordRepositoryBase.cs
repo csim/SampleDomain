@@ -30,11 +30,8 @@
 
             DbContext.SaveChanges();
 
-            var ievent = record.AddedEvent();
-            if (ievent != null)
-            {
-                _messageSession.Publish(ievent).GetAwaiter().GetResult();
-            }
+            var messages = record.AddedMessages();
+            EmitMessagesAsync(messages).GetAwaiter().GetResult();
 
             return record;
         }
@@ -51,13 +48,21 @@
 
             await DbContext.SaveChangesAsync();
 
-            var ievent = record.AddedEvent();
-            if (ievent != null)
-            {
-               await _messageSession.Publish(ievent);
-            }
+            var messages = record.AddedMessages();
+            await EmitMessagesAsync(messages);
 
             return record;
+        }
+
+        private async Task EmitMessagesAsync(IMessage[] messages)
+        {
+            if (messages == null) return;
+
+            foreach (var message in messages)
+            {
+                if (message is IEvent) await _messageSession.Publish(message);
+                if (message is ICommand) await _messageSession.Send(message);
+            }
         }
 
         public virtual IQueryable<T> AsQueryable<T>() where T : RecordBase
@@ -75,7 +80,7 @@
 
             await DbContext.SaveChangesAsync();
 
-            var ievent = record.DeletedEvent();
+            var ievent = record.DeletedMessages();
             if (ievent != null)
             {
                 await _messageSession.Publish(ievent);
@@ -106,11 +111,8 @@
 
             DbContext.SaveChanges();
 
-            var ievent = record.DeletedEvent();
-            if (ievent != null)
-            {
-                _messageSession.Publish(ievent).GetAwaiter().GetResult();
-            }
+            var messages = record.DeletedMessages();
+            EmitMessagesAsync(messages).GetAwaiter().GetResult();
 
             return record;
         }
@@ -121,11 +123,8 @@
 
             await DbContext.SaveChangesAsync();
 
-            var ievent = record.UpdatedEvent();
-            if (ievent != null)
-            {
-                await _messageSession.Publish(ievent);
-            }
+            var messages = record.UpdatedMessages();
+            await EmitMessagesAsync(messages);
         }
     }
 
