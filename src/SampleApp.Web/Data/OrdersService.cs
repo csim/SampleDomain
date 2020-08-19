@@ -13,11 +13,11 @@
 
     public class OrdersService
     {
-        public OrdersService(ILogger<OrdersService> log, IRecordRepository repository, IMessageSession messageSession)
+        public OrdersService(IRecordRepository repository, IMessageSession messageSession, ILogger<OrdersService> log)
         {
-            _log = log;
             _repository = repository;
             _messageSession = messageSession;
+            _log = log;
         }
 
         private readonly ILogger<OrdersService> _log;
