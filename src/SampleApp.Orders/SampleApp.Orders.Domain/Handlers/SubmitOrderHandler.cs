@@ -23,7 +23,7 @@
 
         public async Task Handle(SubmitOrderCommand message, IMessageHandlerContext context)
         {
-            _log.LogInformation($"Handle SubmitOrderCommand {message.Number}");
+            _log.LogInformation($"Handle {message.GetType().Name} {message.Number}");
 
             var id = Guid.NewGuid();
             var timeStamp = DateTime.UtcNow;

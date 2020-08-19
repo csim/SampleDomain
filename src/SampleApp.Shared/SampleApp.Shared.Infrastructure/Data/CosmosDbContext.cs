@@ -45,7 +45,7 @@
         {
             base.OnModelCreating(modelBuilder);
 
-            foreach (var recordType in new[] { typeof(OrderRecord), typeof(OrderItemRecord) })
+            foreach (var recordType in new[] { typeof(OrderRecord), typeof(OrderItemRecord), typeof(OrderAuditRecord) })
             {
                 modelBuilder
                     .Entity(recordType)

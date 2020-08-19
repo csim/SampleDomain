@@ -1,19 +1,22 @@
 ﻿namespace SampleApp.Shared.Infrastructure.Data
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
+    using NServiceBus;
     using SampleApp.Shared.Abstractions;
 
     public abstract class RecordRepositoryBase : IRecordRepository
     {
+        protected RecordRepositoryBase(IMessageSession messageSession)
+        {
+            _messageSession = messageSession;
+        }
+
+        private readonly IMessageSession _messageSession;
+
         protected DbContext DbContext { get; set; }
-
-        protected Dictionary<string, IRecordEvent> EventLookup { get; } = new Dictionary<string, IRecordEvent>();
-
-        protected Dictionary<string, IRecordEvent> EventRegistrations { get; } = new Dictionary<string, IRecordEvent>();
 
         public virtual T Add<T>(T record) where T : RecordBase
         {
@@ -26,6 +29,12 @@
                 .Add(record);
 
             DbContext.SaveChanges();
+
+            var ievent = record.AddedEvent();
+            if (ievent != null)
+            {
+                _messageSession.Publish(ievent).GetAwaiter().GetResult();
+            }
 
             return record;
         }
@@ -41,6 +50,12 @@
                 .AddAsync(record);
 
             await DbContext.SaveChangesAsync();
+
+            var ievent = record.AddedEvent();
+            if (ievent != null)
+            {
+               await _messageSession.Publish(ievent);
+            }
 
             return record;
         }
@@ -59,6 +74,12 @@
                 .Remove(record);
 
             await DbContext.SaveChangesAsync();
+
+            var ievent = record.DeletedEvent();
+            if (ievent != null)
+            {
+                await _messageSession.Publish(ievent);
+            }
         }
 
         public virtual T Retrieve<T>(Guid id) where T : RecordBase
@@ -85,6 +106,12 @@
 
             DbContext.SaveChanges();
 
+            var ievent = record.DeletedEvent();
+            if (ievent != null)
+            {
+                _messageSession.Publish(ievent).GetAwaiter().GetResult();
+            }
+
             return record;
         }
 
@@ -93,6 +120,12 @@
             DbContext.Entry(record).State = EntityState.Modified;
 
             await DbContext.SaveChangesAsync();
+
+            var ievent = record.UpdatedEvent();
+            if (ievent != null)
+            {
+                await _messageSession.Publish(ievent);
+            }
         }
     }
 
