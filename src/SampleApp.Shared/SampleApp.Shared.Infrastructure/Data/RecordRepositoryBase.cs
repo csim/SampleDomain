@@ -54,17 +54,6 @@
             return record;
         }
 
-        private async Task EmitMessagesAsync(IMessage[] messages)
-        {
-            if (messages == null) return;
-
-            foreach (var message in messages)
-            {
-                if (message is IEvent) await _messageSession.Publish(message);
-                if (message is ICommand) await _messageSession.Send(message);
-            }
-        }
-
         public virtual IQueryable<T> AsQueryable<T>() where T : RecordBase
         {
             return DbContext
@@ -125,6 +114,17 @@
 
             var messages = record.UpdatedMessages();
             await EmitMessagesAsync(messages);
+        }
+
+        private async Task EmitMessagesAsync(IMessage[] messages)
+        {
+            if (messages == null) return;
+
+            foreach (var message in messages)
+            {
+                if (message is IEvent) await _messageSession.Publish(message);
+                if (message is ICommand) await _messageSession.Send(message);
+            }
         }
     }
 
