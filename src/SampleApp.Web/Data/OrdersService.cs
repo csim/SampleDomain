@@ -14,20 +14,20 @@
 
     public class OrdersService
     {
-        public OrdersService(ILogger<OrdersService> log, IServiceProvider serviceProvider)
+        public OrdersService(ILogger<OrdersService> log, IRecordRepository repository, IMessageSession messageSession)
         {
             _log = log;
-            _serviceProvider = serviceProvider;
+            _repository = repository;
+            _messageSession = messageSession;
         }
 
         private readonly ILogger<OrdersService> _log;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IRecordRepository _repository;
+        private readonly IMessageSession _messageSession;
 
         public async Task<IEnumerable<OrderRecord>> Orders(int skip = 0, int take = 10000)
         {
-            var repo = _serviceProvider.GetRequiredService<IRecordRepository>();
-
-            return await repo
+            return await _repository
                 .AsQueryable<OrderRecord>()
                 .Skip(skip)
                 .Take(take)
@@ -40,9 +40,7 @@
 
             _log.LogInformation($"SubmitOrderCommand {command.Number}");
 
-            var messageSession = _serviceProvider.GetRequiredService<IMessageSession>();
-
-            var response = await messageSession.Request<SubmitOrderResponse>(command);
+            var response = await _messageSession.Request<SubmitOrderResponse>(command);
 
             _log.LogInformation($"SubmitOrderResponse {response.Id}");
 
