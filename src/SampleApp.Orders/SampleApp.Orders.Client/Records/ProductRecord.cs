@@ -1,6 +1,7 @@
 ﻿namespace SampleApp.Orders.Client.Records
 {
     using System;
+    using Microsoft.EntityFrameworkCore;
     using SampleApp.Shared.Abstractions;
 
     public class ProductRecord : RecordBase, ICompactableRecord
@@ -15,6 +16,7 @@
         }
     }
 
+    [Owned]
     public class CompactProductRecord
     {
         public Guid Id { get; set; }

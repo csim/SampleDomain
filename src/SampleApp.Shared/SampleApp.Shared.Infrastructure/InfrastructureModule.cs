@@ -3,11 +3,12 @@
     using System;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Infrastructure;
+    using Microsoft.EntityFrameworkCore.Storage;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using NServiceBus;
-    using NServiceBus.Features;
     using SampleApp.Orders.Client;
     using SampleApp.Shared.Abstractions;
     using SampleApp.Shared.Infrastructure.Blob;
@@ -40,10 +41,17 @@
                         config.MakeInstanceUniquelyAddressable(Guid.NewGuid().ToString("N"));
                         //config.DisableFeature<AutoSubscribe>();
                         config.EnableCallbacks();
+                        config.EnableInstallers();
 
                         var routing = config
-                            .UseTransport<LearningTransport>()
+                            .UseTransport<SqlServerTransport>()
+                            .ConnectionString("Server=localhost; Database=SampleApp; User Id=sampleapp;Password=sampleapp;")
+                            .DefaultSchema("transport")
                             .Routing();
+
+                        //var routing = config
+                        //    .UseTransport<LearningTransport>()
+                        //    .Routing();
 
                         foreach (var route in routeTable)
                         {
@@ -62,6 +70,13 @@
             {
                 using var scope = host.Services.CreateScope();
                 scope.ServiceProvider.GetRequiredService<CosmosDbContext>().Database.EnsureCreated();
+            }
+            else if (options.RecordRepositoryMode == RecordRepositoryMode.SqlServer)
+            {
+                using var scope = host.Services.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<SqlServerDbContext>();
+                context.Database.EnsureCreated();
+                context.Database.Migrate();
             }
         }
 
@@ -84,10 +99,16 @@
                             options.CosmosConnection.DatabaseName))
                     .AddScoped<IRecordRepository, CosmosRecordRepository>();
             }
+            else if (options.RecordRepositoryMode == RecordRepositoryMode.SqlServer)
+            {
+                services
+                    .AddDbContext<SqlServerDbContext>(o => o.UseSqlServer("Server=localhost; Database=SampleApp; User Id=sampleapp;Password=sampleapp;"))
+                    .AddScoped<IRecordRepository, SqlServerRecordRepository>();
+            }
             else if (options.RecordRepositoryMode == RecordRepositoryMode.InMemory)
             {
                 services
-                    .AddDbContext<CosmosDbContext>(o => o.UseInMemoryDatabase(databaseName: "Sample"))
+                    .AddDbContext<CosmosDbContext>(o => o.UseInMemoryDatabase(databaseName: "SampleApp"))
                     .AddScoped<IRecordRepository, CosmosRecordRepository>();
             }
             else

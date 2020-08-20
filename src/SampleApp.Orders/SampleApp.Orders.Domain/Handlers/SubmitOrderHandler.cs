@@ -28,7 +28,7 @@
             var id = Guid.NewGuid();
             var timeStamp = DateTime.UtcNow;
 
-            _repository.Add(new OrderRecord { Id = id, Number = message.Number, PartitionKey = "Customer1" });
+            await _repository.AddAsync(new OrderRecord { Id = id, Number = message.Number, PartitionKey = "Customer1" });
 
             _log.LogInformation($"Publish OrderSubmittedEvent {id}");
             await context.Publish(new OrderSubmittedEvent { Id = id, Timestamp = timeStamp });
