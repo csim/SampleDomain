@@ -1,4 +1,4 @@
-﻿namespace SampleApp.Orders.Client.Events
+﻿namespace SampleApp.Orders.Client.Commands
 {
     using System;
     using NServiceBus;

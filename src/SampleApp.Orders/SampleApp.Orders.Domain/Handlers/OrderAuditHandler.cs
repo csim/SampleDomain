@@ -4,6 +4,7 @@
     using AutoMapper;
     using Microsoft.Extensions.Logging;
     using NServiceBus;
+    using SampleApp.Orders.Client.Commands;
     using SampleApp.Orders.Client.Events;
     using SampleApp.Orders.Client.Records;
     using SampleApp.Shared.Abstractions;

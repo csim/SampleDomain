@@ -43,15 +43,15 @@
                         config.EnableCallbacks();
                         config.EnableInstallers();
 
-                        var routing = config
-                            .UseTransport<SqlServerTransport>()
-                            .ConnectionString("Server=localhost; Database=SampleApp; User Id=sampleapp;Password=sampleapp;")
-                            .DefaultSchema("transport")
-                            .Routing();
-
                         //var routing = config
-                        //    .UseTransport<LearningTransport>()
+                        //    .UseTransport<SqlServerTransport>()
+                        //    .ConnectionString("Server=localhost; Database=SampleApp; User Id=sampleapp;Password=sampleapp;")
+                        //    .DefaultSchema("transport")
                         //    .Routing();
+
+                        var routing = config
+                            .UseTransport<LearningTransport>()
+                            .Routing();
 
                         foreach (var route in routeTable)
                         {
