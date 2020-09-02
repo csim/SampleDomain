@@ -7,7 +7,7 @@
     using MimeMapping;
     using SampleApp.Shared.Abstractions;
 
-    public abstract class FileSystemBlobRepository : IBlobRepository
+    public class FileSystemBlobRepository : IBlobRepository
     {
         private string _basePath;
 

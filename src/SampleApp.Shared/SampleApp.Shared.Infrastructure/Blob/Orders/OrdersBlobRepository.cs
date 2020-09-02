@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using SampleApp.Shared.Abstractions;
-
-namespace SampleApp.Shared.Infrastructure.Blob.Orders
+﻿namespace SampleApp.Shared.Infrastructure.Blob.Orders
 {
-    class OrdersBlobRepository : IBlobRepository
+    using SampleApp.Orders.Client.Data;
+
+    public class OrdersBlobRepository : FileSystemBlobRepository, IOrdersBlobRepository
     {
     }
 }

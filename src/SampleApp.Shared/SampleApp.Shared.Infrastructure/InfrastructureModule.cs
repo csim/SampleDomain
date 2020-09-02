@@ -1,11 +1,8 @@
 ﻿namespace SampleApp.Shared.Infrastructure
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Infrastructure;
-    using Microsoft.EntityFrameworkCore.Storage;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
@@ -14,7 +11,7 @@
     using SampleApp.Orders.Client.Data;
     using SampleApp.Shared.Abstractions;
     using SampleApp.Shared.Infrastructure.Blob;
-    using SampleApp.Shared.Infrastructure.Data;
+    using SampleApp.Shared.Infrastructure.Blob.Orders;
     using SampleApp.Shared.Infrastructure.Data.Orders;
     using SampleApp.Shared.Infrastructure.Extensions;
     using Serilog;
@@ -72,8 +69,66 @@
             scope.ServiceProvider.GetRequiredService<OrdersDbContext>().Database.EnsureCreated();
         }
 
-        private static IServiceCollection AddRecordRepository<TDbContext, TRecordRepository, TRecordRepositoryImplementation>(this IServiceCollection services, RecordRepositoryOptions options) 
-            where TDbContext : DbContext 
+        private static IServiceCollection AddBlobRepository<TBlobRepository, TBlobRepositoryImplementation>(
+            this IServiceCollection services,
+            BlobRepositoryOptions options)
+            where TBlobRepository : class, IBlobRepository
+            where TBlobRepositoryImplementation : class, TBlobRepository
+        {
+            services
+                .AddScoped<TBlobRepositoryImplementation>()
+                //.AddScoped(typeof(TBlobRepository), typeof(TBlobRepositoryImplementation),
+                //serviceProvider =>
+                //{
+                //    var instance = serviceProvider.GetRequiredService<TBlobRepositoryImplementation>();
+                //    var implType = typeof(TBlobRepositoryImplementation);
+
+                //    if (typeof(FileSystemBlobRepository).IsAssignableFrom(implType))
+                //    {
+                //        var fileSysImpl = instance as FileSystemBlobRepository
+                //            ?? throw new ApplicationException($"Unable to initialize {implType.FullName}");
+                //        fileSysImpl.SetBasePath(options.Connection);
+                //    }
+
+                //    if (typeof(AzureStorageBlobRepository).IsAssignableFrom(implType))
+                //    {
+                //        var azureImpl = instance as AzureStorageBlobRepository
+                //            ?? throw new ApplicationException($"Unable to initialize {implType.FullName}");
+                //        azureImpl.SetConnection(options.Connection);
+                //    }
+
+                //    return instance;
+                //});
+                .AddScoped<TBlobRepository, TBlobRepositoryImplementation>(
+                    serviceProvider =>
+                    {
+                        var instance = serviceProvider.GetRequiredService<TBlobRepositoryImplementation>();
+                        var implType = typeof(TBlobRepositoryImplementation);
+
+                        if (typeof(FileSystemBlobRepository).IsAssignableFrom(implType))
+                        {
+                            var fileSysImpl = instance as FileSystemBlobRepository
+                                ?? throw new ApplicationException($"Unable to initialize {implType.FullName}");
+                            fileSysImpl.SetBasePath(options.Connection);
+                        }
+
+                        if (typeof(AzureStorageBlobRepository).IsAssignableFrom(implType))
+                        {
+                            var azureImpl = instance as AzureStorageBlobRepository
+                                ?? throw new ApplicationException($"Unable to initialize {implType.FullName}");
+                            azureImpl.SetConnection(options.Connection);
+                        }
+
+                        return instance;
+                    });
+
+            return services;
+        }
+
+        private static IServiceCollection AddRecordRepository<TDbContext, TRecordRepository, TRecordRepositoryImplementation>(
+            this IServiceCollection services,
+            RecordRepositoryOptions options)
+            where TDbContext : DbContext
             where TRecordRepository : class, IRecordRepository
             where TRecordRepositoryImplementation : class, TRecordRepository
         {
@@ -97,17 +152,9 @@
             var orderClientOptions = GetOptions<OrdersClientOptions>(configuration);
 
             services
-                .AddRecordRepository<OrdersDbContext, IOrdersRecordRepository, OrdersRecordRepository>(orderClientOptions.Records);
+                .AddRecordRepository<OrdersDbContext, IOrdersRecordRepository, OrdersRecordRepository>(orderClientOptions.Records)
+                .AddBlobRepository<IOrdersBlobRepository, OrdersBlobRepository>(orderClientOptions.Blobs);
 
-            services
-                .AddScoped<FileSystemBlobRepository>()
-                .AddScoped<IOrdersBlobRepository, FileSystemBlobRepository>(
-                    serviceProvider =>
-                    {
-                        var instance = serviceProvider.GetRequiredService<FileSystemBlobRepository>();
-                        instance.SetBasePath(orderClientOptions.Blobs.Connection);
-                        return instance;
-                    });
 
             //if (options.RecordRepositoryMode == RecordRepositoryMode.SqlLite)
             //{
