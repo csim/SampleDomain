@@ -5,13 +5,14 @@
     using Microsoft.Extensions.Logging;
     using NServiceBus;
     using SampleApp.Orders.Client.Commands;
+    using SampleApp.Orders.Client.Data;
     using SampleApp.Orders.Client.Events;
     using SampleApp.Orders.Client.Records;
     using SampleApp.Shared.Abstractions;
 
     public class SubmitOrderHandler : IHandleMessages<SubmitOrderCommand>
     {
-        public SubmitOrderHandler(IRecordRepository repository, ILogger<SubmitOrderHandler> log)
+        public SubmitOrderHandler(IOrdersRecordRepository repository, ILogger<SubmitOrderHandler> log)
         {
             _repository = repository;
             _log = log;
@@ -19,7 +20,7 @@
 
         private readonly ILogger<SubmitOrderHandler> _log;
 
-        private readonly IRecordRepository _repository;
+        private readonly IOrdersRecordRepository _repository;
 
         public async Task Handle(SubmitOrderCommand message, IMessageHandlerContext context)
         {

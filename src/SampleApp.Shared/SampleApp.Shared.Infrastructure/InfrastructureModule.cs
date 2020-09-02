@@ -1,6 +1,7 @@
 ﻿namespace SampleApp.Shared.Infrastructure
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -10,9 +11,12 @@
     using Microsoft.Extensions.Hosting;
     using NServiceBus;
     using SampleApp.Orders.Client;
+    using SampleApp.Orders.Client.Data;
     using SampleApp.Shared.Abstractions;
     using SampleApp.Shared.Infrastructure.Blob;
     using SampleApp.Shared.Infrastructure.Data;
+    using SampleApp.Shared.Infrastructure.Data.Orders;
+    using SampleApp.Shared.Infrastructure.Extensions;
     using Serilog;
 
     public static class InfrastructureModule
@@ -64,83 +68,92 @@
 
         public static void Initialize(IHost host, IConfiguration configuration)
         {
-            var options = GetOptions<InfrastructureOptions>(configuration);
-
-            if (options.RecordRepositoryMode == RecordRepositoryMode.Cosmos)
-            {
-                using var scope = host.Services.CreateScope();
-                scope.ServiceProvider.GetRequiredService<CosmosDbContext>().Database.EnsureCreated();
-            }
-            else if (options.RecordRepositoryMode == RecordRepositoryMode.SqlServer)
-            {
-                using var scope = host.Services.CreateScope();
-                var context = scope.ServiceProvider.GetRequiredService<SqlServerDbContext>();
-                context.Database.EnsureCreated();
-                context.Database.Migrate();
-            }
+            using var scope = host.Services.CreateScope();
+            scope.ServiceProvider.GetRequiredService<OrdersDbContext>().Database.EnsureCreated();
         }
 
         private static IServiceCollection AddSharedInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             var options = GetOptions<InfrastructureOptions>(configuration);
 
-            if (options.RecordRepositoryMode == RecordRepositoryMode.SqlLite)
-            {
-                services
-                    .AddDbContext<CosmosDbContext>(o => o.UseSqlite(options.SqlLiteConnection));
-            }
-            else if (options.RecordRepositoryMode == RecordRepositoryMode.Cosmos)
-            {
-                services
-                    .AddDbContext<CosmosDbContext>(
-                        o => o.UseCosmos(
-                            options.CosmosConnection.AccountEndpoint,
-                            options.CosmosConnection.AccountKey,
-                            options.CosmosConnection.DatabaseName))
-                    .AddScoped<IRecordRepository, CosmosRecordRepository>();
-            }
-            else if (options.RecordRepositoryMode == RecordRepositoryMode.SqlServer)
-            {
-                services
-                    .AddDbContext<SqlServerDbContext>(o => o.UseSqlServer("Server=localhost; Database=SampleApp; User Id=sampleapp;Password=sampleapp;"))
-                    .AddScoped<IRecordRepository, SqlServerRecordRepository>();
-            }
-            else if (options.RecordRepositoryMode == RecordRepositoryMode.InMemory)
-            {
-                services
-                    .AddDbContext<CosmosDbContext>(o => o.UseInMemoryDatabase(databaseName: "SampleApp"))
-                    .AddScoped<IRecordRepository, CosmosRecordRepository>();
-            }
-            else
-            {
-                throw new ApplicationException($"Unknown RecordDatabaseType ({options.RecordRepositoryMode})");
-            }
+            var orderClientOptions = GetOptions<OrdersClientOptions>(configuration);
 
+            var ordersRepoConnection = new Dictionary<string, string>().Parse(orderClientOptions.RecordRepository.Connection);
 
-            if (options.BlobRespositoryMode == BlobRespositoryMode.AzureStorage)
-            {
-                services
-                    .AddScoped<AzureStorageBlobRepository>()
-                    .AddScoped<IBlobRepository, AzureStorageBlobRepository>(
-                        serviceProvider =>
-                        {
-                            var instance = serviceProvider.GetRequiredService<AzureStorageBlobRepository>();
-                            instance.SetConnection(options.AzureStorageAccountConnection);
-                            return instance;
-                        });
-            }
-            else if (options.BlobRespositoryMode == BlobRespositoryMode.FileSystem)
-            {
-                services
-                    .AddScoped<FileSystemBlobRepository>()
-                    .AddScoped<IBlobRepository, FileSystemBlobRepository>(
-                        serviceProvider =>
-                        {
-                            var instance = serviceProvider.GetRequiredService<FileSystemBlobRepository>();
-                            instance.SetBasePath(options.FileSystemBlobBasePath);
-                            return instance;
-                        });
-            }
+            services
+                .AddDbContext<OrdersDbContext>(
+                    o => o.UseCosmos(
+                        ordersRepoConnection["AccountEndpoint"],
+                        ordersRepoConnection["AccountKey"],
+                        ordersRepoConnection["DatabaseName"]))
+                .AddScoped<IOrdersRecordRepository, OrdersRecordRepository>();
+
+            //if (options.RecordRepositoryMode == RecordRepositoryMode.SqlLite)
+            //{
+            //    services
+            //        .AddDbContext<CosmosDbContext>(o => o.UseSqlite(options.SqlLiteConnection));
+            //}
+            //else if (options.RecordRepositoryMode == RecordRepositoryMode.Cosmos)
+            //{
+            //    services
+            //        .AddDbContext<CosmosDbContext>(
+            //            o => o.UseCosmos(
+            //                options.CosmosConnection.AccountEndpoint,
+            //                options.CosmosConnection.AccountKey,
+            //                options.CosmosConnection.DatabaseName))
+            //        .AddScoped<IRecordRepository, CosmosRecordRepository>();
+            //}
+            //else if (options.RecordRepositoryMode == RecordRepositoryMode.SqlServer)
+            //{
+            //    services
+            //        .AddDbContext<SqlServerDbContext>(o => o.UseSqlServer("Server=localhost; Database=SampleApp; User Id=sampleapp;Password=sampleapp;"))
+            //        .AddScoped<IRecordRepository, SqlServerRecordRepository>();
+            //}
+            //else if (options.RecordRepositoryMode == RecordRepositoryMode.InMemory)
+            //{
+            //    services
+            //        .AddDbContext<CosmosDbContext>(o => o.UseInMemoryDatabase(databaseName: "SampleApp"))
+            //        .AddScoped<IRecordRepository, CosmosRecordRepository>();
+            //}
+            //else
+            //{
+            //    throw new ApplicationException($"Unknown RecordDatabaseType ({options.RecordRepositoryMode})");
+            //}
+
+            services
+                .AddScoped<FileSystemBlobRepository>()
+                .AddScoped<IBlobRepository, FileSystemBlobRepository>(
+                    serviceProvider =>
+                    {
+                        var instance = serviceProvider.GetRequiredService<FileSystemBlobRepository>();
+                        instance.SetBasePath(options.FileSystemBlobBasePath);
+                        return instance;
+                    });
+
+            //if (options.BlobRespositoryMode == BlobRespositoryMode.AzureStorage)
+            //{
+            //    services
+            //        .AddScoped<AzureStorageBlobRepository>()
+            //        .AddScoped<IBlobRepository, AzureStorageBlobRepository>(
+            //            serviceProvider =>
+            //            {
+            //                var instance = serviceProvider.GetRequiredService<AzureStorageBlobRepository>();
+            //                instance.SetConnection(options.AzureStorageAccountConnection);
+            //                return instance;
+            //            });
+            //}
+            //else if (options.BlobRespositoryMode == BlobRespositoryMode.FileSystem)
+            //{
+            //    services
+            //        .AddScoped<FileSystemBlobRepository>()
+            //        .AddScoped<IBlobRepository, FileSystemBlobRepository>(
+            //            serviceProvider =>
+            //            {
+            //                var instance = serviceProvider.GetRequiredService<FileSystemBlobRepository>();
+            //                instance.SetBasePath(options.FileSystemBlobBasePath);
+            //                return instance;
+            //            });
+            //}
 
             return services
                 .AddLogging(loggingOptions => loggingOptions.AddSerilog(Log.Logger, dispose: true))

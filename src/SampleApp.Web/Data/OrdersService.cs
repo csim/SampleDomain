@@ -8,12 +8,12 @@
     using Microsoft.Extensions.Logging;
     using NServiceBus;
     using SampleApp.Orders.Client.Commands;
+    using SampleApp.Orders.Client.Data;
     using SampleApp.Orders.Client.Records;
-    using SampleApp.Shared.Abstractions;
 
     public class OrdersService
     {
-        public OrdersService(IRecordRepository repository, IMessageSession messageSession, ILogger<OrdersService> log)
+        public OrdersService(IOrdersRecordRepository repository, IMessageSession messageSession, ILogger<OrdersService> log)
         {
             _repository = repository;
             _messageSession = messageSession;
@@ -22,7 +22,7 @@
 
         private readonly ILogger<OrdersService> _log;
         private readonly IMessageSession _messageSession;
-        private readonly IRecordRepository _repository;
+        private readonly IOrdersRecordRepository _repository;
 
         public async Task<IEnumerable<OrderRecord>> Orders(int skip = 0, int take = 10000)
         {

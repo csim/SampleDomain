@@ -13,7 +13,6 @@
 
             return services
                 .AddAutoMapper(assembly)
-                .AddScoped<IOrdersRecordRepository>();
                 .AddSingleton(options);
         }
     }

@@ -5,13 +5,14 @@
     using Microsoft.Extensions.Logging;
     using NServiceBus;
     using SampleApp.Orders.Client.Commands;
+    using SampleApp.Orders.Client.Data;
     using SampleApp.Orders.Client.Events;
     using SampleApp.Orders.Client.Records;
     using SampleApp.Shared.Abstractions;
 
     public class OrderAuditHandler : IHandleMessages<OrderRecordAuditCommand>
     {
-        public OrderAuditHandler(IRecordRepository repository, IMapper mapper, ILogger<OrderAuditHandler> log)
+        public OrderAuditHandler(IOrdersRecordRepository repository, IMapper mapper, ILogger<OrderAuditHandler> log)
         {
             _repository = repository;
             _mapper = mapper;
@@ -20,7 +21,7 @@
 
         private readonly ILogger<OrderAuditHandler> _log;
         private readonly IMapper _mapper;
-        private readonly IRecordRepository _repository;
+        private readonly IOrdersRecordRepository _repository;
 
         public async Task Handle(OrderRecordAuditCommand message, IMessageHandlerContext context)
         {
