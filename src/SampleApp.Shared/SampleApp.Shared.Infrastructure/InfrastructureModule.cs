@@ -72,21 +72,42 @@
             scope.ServiceProvider.GetRequiredService<OrdersDbContext>().Database.EnsureCreated();
         }
 
+        private static IServiceCollection AddRecordRepository<TDbContext, TRecordRepository, TRecordRepositoryImplementation>(this IServiceCollection services, RecordRepositoryOptions options) 
+            where TDbContext : DbContext 
+            where TRecordRepository : class, IRecordRepository
+            where TRecordRepositoryImplementation : class, TRecordRepository
+        {
+            var connection = options.Connection.ParseColonSeparated();
+
+            services
+                .AddDbContext<TDbContext>(
+                    o => o.UseCosmos(
+                        connection["AccountEndpoint"],
+                        connection["AccountKey"],
+                        connection["DatabaseName"]))
+                .AddScoped<TRecordRepository, TRecordRepositoryImplementation>();
+
+            return services;
+        }
+
         private static IServiceCollection AddSharedInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             var options = GetOptions<InfrastructureOptions>(configuration);
 
             var orderClientOptions = GetOptions<OrdersClientOptions>(configuration);
 
-            var ordersRepoConnection = new Dictionary<string, string>().Parse(orderClientOptions.RecordRepository.Connection);
+            services
+                .AddRecordRepository<OrdersDbContext, IOrdersRecordRepository, OrdersRecordRepository>(orderClientOptions.Records);
 
             services
-                .AddDbContext<OrdersDbContext>(
-                    o => o.UseCosmos(
-                        ordersRepoConnection["AccountEndpoint"],
-                        ordersRepoConnection["AccountKey"],
-                        ordersRepoConnection["DatabaseName"]))
-                .AddScoped<IOrdersRecordRepository, OrdersRecordRepository>();
+                .AddScoped<FileSystemBlobRepository>()
+                .AddScoped<IOrdersBlobRepository, FileSystemBlobRepository>(
+                    serviceProvider =>
+                    {
+                        var instance = serviceProvider.GetRequiredService<FileSystemBlobRepository>();
+                        instance.SetBasePath(orderClientOptions.Blobs.Connection);
+                        return instance;
+                    });
 
             //if (options.RecordRepositoryMode == RecordRepositoryMode.SqlLite)
             //{
@@ -119,16 +140,6 @@
             //{
             //    throw new ApplicationException($"Unknown RecordDatabaseType ({options.RecordRepositoryMode})");
             //}
-
-            services
-                .AddScoped<FileSystemBlobRepository>()
-                .AddScoped<IBlobRepository, FileSystemBlobRepository>(
-                    serviceProvider =>
-                    {
-                        var instance = serviceProvider.GetRequiredService<FileSystemBlobRepository>();
-                        instance.SetBasePath(options.FileSystemBlobBasePath);
-                        return instance;
-                    });
 
             //if (options.BlobRespositoryMode == BlobRespositoryMode.AzureStorage)
             //{

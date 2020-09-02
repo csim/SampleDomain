@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Net;
     using System.Security.Cryptography;
     using System.Text;
@@ -10,16 +11,30 @@
 
     public static class StringExtensions
 	{
-		public static string After(this string source, string delimiter)
+        public static IDictionary<string, string> ParseColonSeparated(this string source)
+        {
+            return source
+                .Split(";")
+                .ToDictionary(
+                    _ => _.Before("="),
+                    _ =>
+                    {
+                        var val = _.After("=");
+                        return string.IsNullOrEmpty(val) ? "" : val;
+                    }
+                );
+        }
+
+        public static string After(this string source, string delimiter)
 		{
 			var pos = source.IndexOf(delimiter, StringComparison.Ordinal);
-			return pos < 0 ? string.Empty : source.Substring(pos + delimiter.Length);
+			return pos < 0 ? String.Empty : source.Substring(pos + delimiter.Length);
 		}
 
 		public static string Before(this string source, string delimiter)
 		{
 			var pos = source.IndexOf(delimiter, StringComparison.Ordinal);
-			return pos < 0 ? string.Empty : source.Substring(0, pos);
+			return pos < 0 ? String.Empty : source.Substring(0, pos);
 		}
 
 		public static string ChopStart(this string source, int length)
@@ -127,7 +142,7 @@
 
 		public static bool EqualsInsensitive(this string source, string target)
 		{
-			return string.Equals(source, target, StringComparison.CurrentCultureIgnoreCase);
+			return String.Equals(source, target, StringComparison.CurrentCultureIgnoreCase);
 		}
 
 		public static string HtmlDecode(this string source)
@@ -150,7 +165,7 @@
 			var md5 = new MD5CryptoServiceProvider();
 			var newdata = Encoding.Default.GetBytes(source);
 			var encrypted = md5.ComputeHash(newdata);
-			return BitConverter.ToString(encrypted).Replace("-", string.Empty).ToLower();
+			return BitConverter.ToString(encrypted).Replace("-", String.Empty).ToLower();
 		}
 
 		public static long Md5AsInt(this string source)
@@ -181,7 +196,7 @@
 
 		public static string Repeat(this string source, int n)
 		{
-			var result = string.Empty;
+			var result = String.Empty;
 
 			for (var i = 0; i < n; i++)
 			{
@@ -249,7 +264,7 @@
 
 		public static string ToSlug(this string source)
 		{
-			if (string.IsNullOrEmpty(source)) return "-";
+			if (String.IsNullOrEmpty(source)) return "-";
 
 			var str = source.ToLower().RemoveDiacritics();
 			str = Regex.Replace(str, @"[^a-z0-9\s-]", ""); // remove punctuation and non-ascii characters
@@ -257,7 +272,7 @@
 			str = str.Truncate(45);
 			str = Regex.Replace(str, " - ", " ");
 			str = Regex.Replace(str, @"\s", "-"); // replace spaces with hyphens
-			return string.IsNullOrEmpty(str) ? "-" : str;
+			return String.IsNullOrEmpty(str) ? "-" : str;
 		}
 
 		public static Stream ToStream(this string s)
@@ -272,12 +287,12 @@
 
 		public static string ToTitleCase(this string source)
 		{
-			if (string.IsNullOrEmpty(source))
+			if (String.IsNullOrEmpty(source))
 			{
-				return string.Empty;
+				return String.Empty;
 			}
 
-			return char.ToUpper(source[0]) + source.Substring(1);
+			return Char.ToUpper(source[0]) + source.Substring(1);
 		}
 
 		public static string Truncate(this string source, int maxLength)
@@ -299,4 +314,4 @@
 		{
 			return Convert.FromBase64String(source);
 		}
-	}}
+    }}
