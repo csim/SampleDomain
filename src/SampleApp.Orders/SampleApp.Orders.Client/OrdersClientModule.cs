@@ -2,6 +2,8 @@
 {
     using AutoMapper;
     using Microsoft.Extensions.DependencyInjection;
+    using SampleApp.Orders.Client.Data;
+    using SampleApp.Shared.Abstractions;
 
     public static class OrdersClientModule
     {
@@ -11,6 +13,7 @@
 
             return services
                 .AddAutoMapper(assembly)
+                .AddScoped<IOrdersRecordRepository>();
                 .AddSingleton(options);
         }
     }

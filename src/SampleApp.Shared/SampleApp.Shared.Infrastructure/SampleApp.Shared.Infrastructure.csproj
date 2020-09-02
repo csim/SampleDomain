@@ -7,6 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Data\Migrations\**" />
+      <EmbeddedResource Remove="Data\Migrations\**" />
+      <None Remove="Data\Migrations\**" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.7" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.7" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.7" />
@@ -34,10 +40,6 @@
     <ItemGroup>
       <ProjectReference Include="..\..\SampleApp.Orders\SampleApp.Orders.Client\SampleApp.Orders.Client.csproj" />
       <ProjectReference Include="..\SampleApp.Shared.Abstractions\SampleApp.Shared.Abstractions.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Data\Migrations\" />
     </ItemGroup>
 
 </Project>
