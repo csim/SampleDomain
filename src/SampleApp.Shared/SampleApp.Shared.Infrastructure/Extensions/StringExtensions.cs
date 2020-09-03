@@ -162,7 +162,7 @@
             return BitConverter.ToInt64(encrypted, 0);
         }
 
-        public static IDictionary<string, string> ParseSemiColonSeparated(this string source)
+        public static IDictionary<string, string> ParseSeparated(this string source)
         {
             return source.ParseSeparated(";", "=");
         }

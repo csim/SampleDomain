@@ -107,7 +107,7 @@
             where TCosmosDbContext : DbContext
             where TCosmosImplementation : class, TRecordRepository
         {
-            var connection = options.Connection.ParseSemiColonSeparated();
+            var connection = options.Connection.ParseSeparated();
 
             if (options.Mode == RecordRespositoryMode.Cosmos)
             {
