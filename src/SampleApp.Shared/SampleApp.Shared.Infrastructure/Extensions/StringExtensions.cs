@@ -164,13 +164,18 @@
 
         public static IDictionary<string, string> ParseSemiColonSeparated(this string source)
         {
+            return source.ParseSeparated(";", "=");
+        }
+
+        public static IDictionary<string, string> ParseSeparated(this string source, string keyDelimiter, string valueDelimiter)
+        {
             return source
-                .Split(";")
+                .Split(keyDelimiter)
                 .ToDictionary(
-                    _ => _.Before("="),
+                    _ => _.Before(valueDelimiter),
                     _ =>
                     {
-                        var val = _.After("=");
+                        var val = _.After(valueDelimiter);
                         return string.IsNullOrEmpty(val) ? "" : val;
                     }
                 );
