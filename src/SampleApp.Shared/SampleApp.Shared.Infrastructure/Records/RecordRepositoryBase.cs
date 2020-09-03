@@ -1,11 +1,11 @@
-﻿namespace SampleApp.Shared.Infrastructure.Data
+﻿namespace SampleApp.Shared.Infrastructure.Records
 {
     using System;
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using NServiceBus;
-    using SampleApp.Shared.Abstractions;
+    using SampleApp.Shared.Abstractions.Records;
 
     public abstract class RecordRepositoryBase : IRecordRepository
     {

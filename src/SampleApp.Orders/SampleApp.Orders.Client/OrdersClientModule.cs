@@ -2,8 +2,6 @@
 {
     using AutoMapper;
     using Microsoft.Extensions.DependencyInjection;
-    using SampleApp.Orders.Client.Data;
-    using SampleApp.Shared.Abstractions;
 
     public static class OrdersClientModule
     {

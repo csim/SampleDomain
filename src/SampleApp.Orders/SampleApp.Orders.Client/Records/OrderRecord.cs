@@ -5,8 +5,7 @@
     using Microsoft.EntityFrameworkCore;
     using NServiceBus;
     using SampleApp.Orders.Client.Commands;
-    using SampleApp.Orders.Client.Events;
-    using SampleApp.Shared.Abstractions;
+    using SampleApp.Shared.Abstractions.Records;
 
     public class OrderRecord : RecordBase
     {

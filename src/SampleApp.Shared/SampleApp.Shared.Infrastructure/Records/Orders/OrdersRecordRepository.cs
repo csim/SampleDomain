@@ -1,4 +1,4 @@
-﻿namespace SampleApp.Shared.Infrastructure.Data.Orders
+﻿namespace SampleApp.Shared.Infrastructure.Records.Orders
 {
     using NServiceBus;
     using SampleApp.Orders.Client.Data;

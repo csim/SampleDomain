@@ -13,9 +13,10 @@
 
     public class OrdersService
     {
-        public OrdersService(IOrdersRecordRepository repository, IMessageSession messageSession, ILogger<OrdersService> log)
+        public OrdersService(IOrdersRecordRepository repository, IOrdersBlobRepository blob, IMessageSession messageSession, ILogger<OrdersService> log)
         {
             _repository = repository;
+            _blob = blob;
             _messageSession = messageSession;
             _log = log;
         }
@@ -23,6 +24,7 @@
         private readonly ILogger<OrdersService> _log;
         private readonly IMessageSession _messageSession;
         private readonly IOrdersRecordRepository _repository;
+        private readonly IOrdersBlobRepository _blob;
 
         public async Task<IEnumerable<OrderRecord>> Orders(int skip = 0, int take = 10000)
         {

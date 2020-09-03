@@ -1,26 +1,18 @@
-﻿namespace SampleApp.Shared.Infrastructure.Data
+﻿namespace SampleApp.Shared.Infrastructure.Records.Orders
 {
-    using System;
     using System.Linq;
     using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using SampleApp.Orders.Client;
-    using SampleApp.Orders.Client.Records;
-    using SampleApp.Shared.Abstractions;
+    using SampleApp.Shared.Abstractions.Records;
 
-    public class SqlServerDbContext : DbContext
+    public class OrdersDbContext : DbContext
     {
-        public SqlServerDbContext(DbContextOptions<SqlServerDbContext> options) : base(options)
+        public OrdersDbContext(DbContextOptions<OrdersDbContext> options) : base(options)
         {
         }
-
-        public DbSet<OrderAuditRecord> OrderAudit { get; set; }
-
-        public DbSet<OrderRecord> Orders { get; set; }
-
-        public DbSet<ProductRecord> Product { get; set; }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
@@ -46,6 +38,7 @@
                 {
                     modelBuilder
                         .Entity(recordType)
+                        .ToContainer(recordType.Name.Replace("Record", ""))
                         .HasPartitionKey("PartitionKey")
                         .HasKey("Id");
                 }

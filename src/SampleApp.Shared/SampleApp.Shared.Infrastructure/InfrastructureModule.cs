@@ -9,10 +9,12 @@
     using NServiceBus;
     using SampleApp.Orders.Client;
     using SampleApp.Orders.Client.Data;
-    using SampleApp.Shared.Abstractions;
-    using SampleApp.Shared.Infrastructure.Blob;
-    using SampleApp.Shared.Infrastructure.Data.Orders;
+    using SampleApp.Shared.Abstractions.Blobs;
+    using SampleApp.Shared.Abstractions.Records;
+    using SampleApp.Shared.Infrastructure.Blobs;
+    using SampleApp.Shared.Infrastructure.Blobs.Orders;
     using SampleApp.Shared.Infrastructure.Extensions;
+    using SampleApp.Shared.Infrastructure.Records.Orders;
     using Serilog;
 
     public static class InfrastructureModule
@@ -21,7 +23,7 @@
         {
             var workerEndpointName = "SampleApp.Shared.Worker";
 
-            var routeTable = new[] { new { EndpointName = workerEndpointName, typeof(OrdersClientModule).Assembly } };
+            var messageRouteTable = new[] { new { EndpointName = workerEndpointName, typeof(OrdersClientModule).Assembly } };
 
             return hostBuilder
                 .UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration))
@@ -53,7 +55,7 @@
                             .UseTransport<LearningTransport>()
                             .Routing();
 
-                        foreach (var route in routeTable)
+                        foreach (var route in messageRouteTable)
                         {
                             routing.RouteToEndpoint(route.Assembly, route.EndpointName);
                         }
@@ -68,13 +70,15 @@
             scope.ServiceProvider.GetRequiredService<OrdersDbContext>().Database.EnsureCreated();
         }
 
-        private static IServiceCollection AddBlobRepository<TBlobRepository>(
+        private static IServiceCollection AddBlobRepository<TBlobRepository, TFileSystemImplementation, TAzureStorageImplementation>(
             this IServiceCollection services,
             BlobRepositoryOptions options)
             where TBlobRepository : class, IBlobRepository
+            where TFileSystemImplementation : class, TBlobRepository
+            where TAzureStorageImplementation : class, TBlobRepository
         {
-            var implementationType = options.Mode == BlobRespositoryMode.FileSystem ? typeof(FileSystemBlobRepository)
-                : options.Mode == BlobRespositoryMode.AzureStorage ? typeof(AzureStorageBlobRepository)
+            var implementationType = options.Mode == BlobRespositoryMode.FileSystem ? typeof(TFileSystemImplementation)
+                : options.Mode == BlobRespositoryMode.AzureStorage ? typeof(TAzureStorageImplementation)
                 : throw new ApplicationException($"Invalid BlobRepository mode ({options.Mode})");
 
             services
@@ -96,22 +100,29 @@
             return services;
         }
 
-        private static IServiceCollection AddRecordRepository<TDbContext, TRecordRepository, TRecordRepositoryImplementation>(
+        private static IServiceCollection AddRecordRepository<TRecordRepository, TCosmoseDbContext, TCosmosImplementation>(
             this IServiceCollection services,
             RecordRepositoryOptions options)
-            where TDbContext : DbContext
             where TRecordRepository : class, IRecordRepository
-            where TRecordRepositoryImplementation : class, TRecordRepository
+            where TCosmoseDbContext : DbContext
+            where TCosmosImplementation : class, TRecordRepository
         {
             var connection = options.Connection.ParseSemiColonSeparated();
 
-            services
-                .AddDbContext<TDbContext>(
-                    o => o.UseCosmos(
-                        connection["AccountEndpoint"],
-                        connection["AccountKey"],
-                        connection["DatabaseName"]))
-                .AddScoped<TRecordRepository, TRecordRepositoryImplementation>();
+            if (options.Mode == RecordRespositoryMode.Cosmos)
+            {
+                services
+                    .AddDbContext<TCosmoseDbContext>(
+                        o => o.UseCosmos(
+                            connection["AccountEndpoint"],
+                            connection["AccountKey"],
+                            connection["DatabaseName"]))
+                    .AddScoped<TRecordRepository, TCosmosImplementation>();
+            }
+            else
+            {
+                throw new ApplicationException($"Invalid RecordRepository mode ({options.Mode})");
+            }
 
             return services;
         }
@@ -122,84 +133,13 @@
 
             var orderClientOptions = GetOptions<OrdersClientOptions>(configuration);
 
-            services
-                .AddRecordRepository<OrdersDbContext, IOrdersRecordRepository, OrdersRecordRepository>(orderClientOptions.Records)
-                .AddScoped<FileSystemBlobRepository>()
-                .AddScoped<AzureStorageBlobRepository>()
-                .AddBlobRepository<IOrdersBlobRepository>(orderClientOptions.Blobs);
-
-            //services
-            //    .AddScoped<FileSystemBlobRepository>()
-            //    .AddScoped<AzureStorageBlobRepository>()
-            //    .AddScoped<IOrdersBlobRepository, OrdersFileSystemBlobRepository>(
-            //        serviceProvider =>
-            //        {
-            //            var instance = serviceProvider.GetRequiredService<OrdersFileSystemBlobRepository>();
-            //            instance?.SetBasePath(orderClientOptions.Blobs.Connection);
-
-            //            return instance;
-            //        });
-
-            //if (options.RecordRepositoryMode == RecordRepositoryMode.SqlLite)
-            //{
-            //    services
-            //        .AddDbContext<CosmosDbContext>(o => o.UseSqlite(options.SqlLiteConnection));
-            //}
-            //else if (options.RecordRepositoryMode == RecordRepositoryMode.Cosmos)
-            //{
-            //    services
-            //        .AddDbContext<CosmosDbContext>(
-            //            o => o.UseCosmos(
-            //                options.CosmosConnection.AccountEndpoint,
-            //                options.CosmosConnection.AccountKey,
-            //                options.CosmosConnection.DatabaseName))
-            //        .AddScoped<IRecordRepository, CosmosRecordRepository>();
-            //}
-            //else if (options.RecordRepositoryMode == RecordRepositoryMode.SqlServer)
-            //{
-            //    services
-            //        .AddDbContext<SqlServerDbContext>(o => o.UseSqlServer("Server=localhost; Database=SampleApp; User Id=sampleapp;Password=sampleapp;"))
-            //        .AddScoped<IRecordRepository, SqlServerRecordRepository>();
-            //}
-            //else if (options.RecordRepositoryMode == RecordRepositoryMode.InMemory)
-            //{
-            //    services
-            //        .AddDbContext<CosmosDbContext>(o => o.UseInMemoryDatabase(databaseName: "SampleApp"))
-            //        .AddScoped<IRecordRepository, CosmosRecordRepository>();
-            //}
-            //else
-            //{
-            //    throw new ApplicationException($"Unknown RecordDatabaseType ({options.RecordRepositoryMode})");
-            //}
-
-            //if (options.BlobRespositoryMode == BlobRespositoryMode.AzureStorage)
-            //{
-            //    services
-            //        .AddScoped<AzureStorageBlobRepository>()
-            //        .AddScoped<IBlobRepository, AzureStorageBlobRepository>(
-            //            serviceProvider =>
-            //            {
-            //                var instance = serviceProvider.GetRequiredService<AzureStorageBlobRepository>();
-            //                instance.SetConnection(options.AzureStorageAccountConnection);
-            //                return instance;
-            //            });
-            //}
-            //else if (options.BlobRespositoryMode == BlobRespositoryMode.FileSystem)
-            //{
-            //    services
-            //        .AddScoped<FileSystemBlobRepository>()
-            //        .AddScoped<IBlobRepository, FileSystemBlobRepository>(
-            //            serviceProvider =>
-            //            {
-            //                var instance = serviceProvider.GetRequiredService<FileSystemBlobRepository>();
-            //                instance.SetBasePath(options.FileSystemBlobBasePath);
-            //                return instance;
-            //            });
-            //}
-
             return services
                 .AddLogging(loggingOptions => loggingOptions.AddSerilog(Log.Logger, dispose: true))
-                .AddSingleton(options);
+                .AddSingleton(options)
+                .AddScoped<FileSystemBlobRepository>()
+                .AddScoped<AzureStorageBlobRepository>()
+                .AddRecordRepository<IOrdersRecordRepository, OrdersDbContext, OrdersRecordRepository>(orderClientOptions.Records)
+                .AddBlobRepository<IOrdersBlobRepository, OrdersFileSystemBlobRepository, OrdersAzureStorageBlobRepository>(orderClientOptions.Blobs);
         }
 
         private static TOptions GetOptions<TOptions>(IConfiguration config) where TOptions : class, new()

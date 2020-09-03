@@ -3,7 +3,7 @@
     using System;
     using AutoMapper;
     using Microsoft.EntityFrameworkCore;
-    using SampleApp.Shared.Abstractions;
+    using SampleApp.Shared.Abstractions.Records;
 
     public class OrderAuditRecord : RecordBase
     {
@@ -13,7 +13,7 @@
 
         public string TransactionTypeName
         {
-            get { return TransactionType.ToString(); }
+            get => TransactionType.ToString();
             // ReSharper disable once ValueParameterNotUsed
             set { }
         }

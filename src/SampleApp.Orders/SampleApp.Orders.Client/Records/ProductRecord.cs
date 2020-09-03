@@ -2,7 +2,7 @@
 {
     using System;
     using Microsoft.EntityFrameworkCore;
-    using SampleApp.Shared.Abstractions;
+    using SampleApp.Shared.Abstractions.Records;
 
     public class ProductRecord : RecordBase, ICompactableRecord
     {

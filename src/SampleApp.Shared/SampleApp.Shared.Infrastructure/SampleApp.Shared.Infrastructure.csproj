@@ -7,9 +7,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="Data\Migrations\**" />
-      <EmbeddedResource Remove="Data\Migrations\**" />
-      <None Remove="Data\Migrations\**" />
+      <Compile Remove="Records\Migrations\**" />
+      <EmbeddedResource Remove="Records\Migrations\**" />
+      <None Remove="Records\Migrations\**" />
     </ItemGroup>
 
     <ItemGroup>

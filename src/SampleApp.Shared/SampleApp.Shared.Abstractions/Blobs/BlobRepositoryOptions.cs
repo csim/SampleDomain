@@ -1,4 +1,4 @@
-﻿namespace SampleApp.Shared.Abstractions
+﻿namespace SampleApp.Shared.Abstractions.Blobs
 {
     public interface IBlobRepositoryOptions
     {

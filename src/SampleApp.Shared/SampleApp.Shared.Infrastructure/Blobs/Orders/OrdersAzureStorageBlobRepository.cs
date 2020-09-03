@@ -1,4 +1,4 @@
-﻿namespace SampleApp.Shared.Infrastructure.Blob.Orders
+﻿namespace SampleApp.Shared.Infrastructure.Blobs.Orders
 {
     using SampleApp.Orders.Client.Data;
 

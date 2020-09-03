@@ -1,4 +1,4 @@
-﻿namespace SampleApp.Shared.Abstractions
+﻿namespace SampleApp.Shared.Abstractions.Blobs
 {
     using System;
     using System.Collections.Generic;

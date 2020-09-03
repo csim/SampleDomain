@@ -1,4 +1,4 @@
-﻿namespace SampleApp.Shared.Infrastructure.Data
+﻿namespace SampleApp.Shared.Infrastructure.Records
 {
     using NServiceBus;
 

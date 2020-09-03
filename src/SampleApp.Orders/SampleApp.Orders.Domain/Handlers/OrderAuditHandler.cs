@@ -6,9 +6,7 @@
     using NServiceBus;
     using SampleApp.Orders.Client.Commands;
     using SampleApp.Orders.Client.Data;
-    using SampleApp.Orders.Client.Events;
     using SampleApp.Orders.Client.Records;
-    using SampleApp.Shared.Abstractions;
 
     public class OrderAuditHandler : IHandleMessages<OrderRecordAuditCommand>
     {

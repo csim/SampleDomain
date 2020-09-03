@@ -8,7 +8,6 @@
     using SampleApp.Orders.Client.Data;
     using SampleApp.Orders.Client.Events;
     using SampleApp.Orders.Client.Records;
-    using SampleApp.Shared.Abstractions;
 
     public class SubmitOrderHandler : IHandleMessages<SubmitOrderCommand>
     {
