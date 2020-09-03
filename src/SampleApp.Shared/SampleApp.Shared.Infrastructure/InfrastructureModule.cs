@@ -88,11 +88,11 @@
                     {
                         var instance = (TBlobRepository)serviceProvider.GetRequiredService(implementationType);
 
-                        var fileSysImpl = instance as FileSystemBlobRepository;
-                        fileSysImpl?.SetBasePath(options.Connection);
+                        var instanceFileSys = instance as FileSystemBlobRepository;
+                        instanceFileSys?.SetBasePath(options.Connection);
 
-                        var azureImpl = instance as AzureStorageBlobRepository;
-                        azureImpl?.SetConnection(options.Connection);
+                        var instanceAzure = instance as AzureStorageBlobRepository;
+                        instanceAzure?.SetConnection(options.Connection);
 
                         return instance;
                     });
@@ -100,11 +100,11 @@
             return services;
         }
 
-        private static IServiceCollection AddRecordRepository<TRecordRepository, TCosmoseDbContext, TCosmosImplementation>(
+        private static IServiceCollection AddRecordRepository<TRecordRepository, TCosmosDbContext, TCosmosImplementation>(
             this IServiceCollection services,
             RecordRepositoryOptions options)
             where TRecordRepository : class, IRecordRepository
-            where TCosmoseDbContext : DbContext
+            where TCosmosDbContext : DbContext
             where TCosmosImplementation : class, TRecordRepository
         {
             var connection = options.Connection.ParseSemiColonSeparated();
@@ -112,7 +112,7 @@
             if (options.Mode == RecordRespositoryMode.Cosmos)
             {
                 services
-                    .AddDbContext<TCosmoseDbContext>(
+                    .AddDbContext<TCosmosDbContext>(
                         o => o.UseCosmos(
                             connection["AccountEndpoint"],
                             connection["AccountKey"],

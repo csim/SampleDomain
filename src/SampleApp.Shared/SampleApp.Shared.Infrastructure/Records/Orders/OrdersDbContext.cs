@@ -32,7 +32,7 @@
             {
                 var recordTypes = assembly
                     .GetTypes()
-                    .Where(t => t.Name != recordBaseType.Name && recordBaseType.IsAssignableFrom(t));
+                    .Where(_ => _.Name != recordBaseType.Name && recordBaseType.IsAssignableFrom(_));
 
                 foreach (var recordType in recordTypes)
                 {
