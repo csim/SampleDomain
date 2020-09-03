@@ -1,9 +1,10 @@
 ﻿@page "/fetchdata"
 @using SampleApp.Web.Data
 @using SampleApp.Orders.Client.Records
-@using SampleApp.Orders.Client.Data
-@inject IOrdersRecordRepository OrdersRepo
+@using SampleApp.Orders.Client
 @inject OrdersService Orders
+@inject IOrdersRecordRepository OrdersRecords
+@inject IOrdersBlobRepository OrdersBlobs
 
 <h1>Weather forecast</h1>
 
@@ -22,6 +23,9 @@ else
      </button>
      <button class="btn btn-primary" @onclick="LoadOrders">
           Load Orders
+     </button>
+     <button class="btn btn-primary" @onclick="SaveFile">
+          Save File
      </button>
      <br />
      <br />
@@ -79,7 +83,15 @@ else
 
      private async Task LoadOrdersAsync()
      {
-          _orders = await OrdersRepo.QueryAsync<OrderRecord>();
+          _orders = await OrdersRecords.QueryAsync<OrderRecord>();
      }
 
+     private async Task SaveFile()
+     {
+          var id = Guid.NewGuid().ToString();
+          var containerName = DateTime.Now.ToString("yyyy-MM-ddThh");
+
+          await OrdersBlobs.EnsureContainerAsync(containerName);
+          await OrdersBlobs.WriteBlobAsync(containerName, $"test_{id}.txt", id);
+     }
 }

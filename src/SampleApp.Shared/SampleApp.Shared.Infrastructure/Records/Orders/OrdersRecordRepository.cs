@@ -1,7 +1,7 @@
 ﻿namespace SampleApp.Shared.Infrastructure.Records.Orders
 {
     using NServiceBus;
-    using SampleApp.Orders.Client.Data;
+    using SampleApp.Orders.Client.Records;
 
     public class OrdersRecordRepository : RecordRepositoryBase, IOrdersRecordRepository
     {

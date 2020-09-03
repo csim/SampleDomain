@@ -1,4 +1,4 @@
-﻿namespace SampleApp.Orders.Client.Data
+﻿namespace SampleApp.Orders.Client
 {
     using SampleApp.Shared.Abstractions.Blobs;
 

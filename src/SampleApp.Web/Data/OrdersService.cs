@@ -5,21 +5,17 @@
     using Microsoft.Extensions.Logging;
     using NServiceBus;
     using SampleApp.Orders.Client.Commands;
-    using SampleApp.Orders.Client.Data;
 
     public class OrdersService
     {
         public OrdersService(
-            IOrdersBlobRepository blob,
             IMessageSession messageSession,
             ILogger<OrdersService> log)
         {
-            _blob = blob;
             _messageSession = messageSession;
             _log = log;
         }
 
-        private readonly IOrdersBlobRepository _blob;
         private readonly ILogger<OrdersService> _log;
         private readonly IMessageSession _messageSession;
 

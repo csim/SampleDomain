@@ -8,7 +8,7 @@
     using Microsoft.Extensions.Hosting;
     using NServiceBus;
     using SampleApp.Orders.Client;
-    using SampleApp.Orders.Client.Data;
+    using SampleApp.Orders.Client.Records;
     using SampleApp.Shared.Abstractions.Blobs;
     using SampleApp.Shared.Abstractions.Records;
     using SampleApp.Shared.Infrastructure.Blobs;

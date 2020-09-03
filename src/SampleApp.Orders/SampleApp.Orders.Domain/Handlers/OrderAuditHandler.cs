@@ -5,7 +5,6 @@
     using Microsoft.Extensions.Logging;
     using NServiceBus;
     using SampleApp.Orders.Client.Commands;
-    using SampleApp.Orders.Client.Data;
     using SampleApp.Orders.Client.Records;
 
     public class OrderAuditHandler : IHandleMessages<OrderRecordAuditCommand>
