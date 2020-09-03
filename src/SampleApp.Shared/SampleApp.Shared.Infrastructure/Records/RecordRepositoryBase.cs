@@ -1,7 +1,9 @@
 ﻿namespace SampleApp.Shared.Infrastructure.Records
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
+    using System.Linq.Expressions;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using NServiceBus;
@@ -74,6 +76,21 @@
             {
                 await _messageSession.Publish(ievent);
             }
+        }
+
+        public async Task<IEnumerable<TRecord>> Query<TRecord>(Expression<Func<TRecord, bool>> predicate, int skip = 0, int take = 1000)
+            where TRecord : RecordBase
+        {
+            return await AsQueryable<TRecord>()
+                .Where(predicate)
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<TRecord>> Query<TRecord>(int skip = 0, int take = 10000) where TRecord : RecordBase
+        {
+            return await Query<TRecord>(_ => true, skip, take);
         }
 
         public virtual T Retrieve<T>(Guid id) where T : RecordBase
