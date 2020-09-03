@@ -11,7 +11,7 @@
 
     public static class StringExtensions
 	{
-        public static IDictionary<string, string> ParseColonSeparated(this string source)
+        public static IDictionary<string, string> ParseSemiColonSeparated(this string source)
         {
             return source
                 .Split(";")

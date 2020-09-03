@@ -52,7 +52,7 @@
                     })
                 .Build();
 
-            InfrastructureModule.Initialize(host, _configuration);
+            InfrastructureModule.Initialize(host);
 
             await host.RunAsync();
         }

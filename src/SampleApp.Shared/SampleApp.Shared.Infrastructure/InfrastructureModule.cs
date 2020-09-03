@@ -11,7 +11,6 @@
     using SampleApp.Orders.Client.Data;
     using SampleApp.Shared.Abstractions;
     using SampleApp.Shared.Infrastructure.Blob;
-    using SampleApp.Shared.Infrastructure.Blob.Orders;
     using SampleApp.Shared.Infrastructure.Data.Orders;
     using SampleApp.Shared.Infrastructure.Extensions;
     using Serilog;
@@ -63,61 +62,33 @@
                     });
         }
 
-        public static void Initialize(IHost host, IConfiguration configuration)
+        public static void Initialize(IHost host)
         {
             using var scope = host.Services.CreateScope();
             scope.ServiceProvider.GetRequiredService<OrdersDbContext>().Database.EnsureCreated();
         }
 
-        private static IServiceCollection AddBlobRepository<TBlobRepository, TBlobRepositoryImplementation>(
+        private static IServiceCollection AddBlobRepository<TBlobRepository>(
             this IServiceCollection services,
             BlobRepositoryOptions options)
             where TBlobRepository : class, IBlobRepository
-            where TBlobRepositoryImplementation : class, TBlobRepository
         {
+            var implementationType = options.Mode == BlobRespositoryMode.FileSystem ? typeof(FileSystemBlobRepository)
+                : options.Mode == BlobRespositoryMode.AzureStorage ? typeof(AzureStorageBlobRepository)
+                : throw new ApplicationException($"Invalid BlobRepository mode ({options.Mode})");
+
             services
-                .AddScoped<TBlobRepositoryImplementation>()
-                //.AddScoped(typeof(TBlobRepository), typeof(TBlobRepositoryImplementation),
-                //serviceProvider =>
-                //{
-                //    var instance = serviceProvider.GetRequiredService<TBlobRepositoryImplementation>();
-                //    var implType = typeof(TBlobRepositoryImplementation);
-
-                //    if (typeof(FileSystemBlobRepository).IsAssignableFrom(implType))
-                //    {
-                //        var fileSysImpl = instance as FileSystemBlobRepository
-                //            ?? throw new ApplicationException($"Unable to initialize {implType.FullName}");
-                //        fileSysImpl.SetBasePath(options.Connection);
-                //    }
-
-                //    if (typeof(AzureStorageBlobRepository).IsAssignableFrom(implType))
-                //    {
-                //        var azureImpl = instance as AzureStorageBlobRepository
-                //            ?? throw new ApplicationException($"Unable to initialize {implType.FullName}");
-                //        azureImpl.SetConnection(options.Connection);
-                //    }
-
-                //    return instance;
-                //});
-                .AddScoped<TBlobRepository, TBlobRepositoryImplementation>(
+                .AddScoped(implementationType)
+                .AddScoped(
                     serviceProvider =>
                     {
-                        var instance = serviceProvider.GetRequiredService<TBlobRepositoryImplementation>();
-                        var implType = typeof(TBlobRepositoryImplementation);
+                        var instance = (TBlobRepository)serviceProvider.GetRequiredService(implementationType);
 
-                        if (typeof(FileSystemBlobRepository).IsAssignableFrom(implType))
-                        {
-                            var fileSysImpl = instance as FileSystemBlobRepository
-                                ?? throw new ApplicationException($"Unable to initialize {implType.FullName}");
-                            fileSysImpl.SetBasePath(options.Connection);
-                        }
+                        var fileSysImpl = instance as FileSystemBlobRepository;
+                        fileSysImpl?.SetBasePath(options.Connection);
 
-                        if (typeof(AzureStorageBlobRepository).IsAssignableFrom(implType))
-                        {
-                            var azureImpl = instance as AzureStorageBlobRepository
-                                ?? throw new ApplicationException($"Unable to initialize {implType.FullName}");
-                            azureImpl.SetConnection(options.Connection);
-                        }
+                        var azureImpl = instance as AzureStorageBlobRepository;
+                        azureImpl?.SetConnection(options.Connection);
 
                         return instance;
                     });
@@ -132,7 +103,7 @@
             where TRecordRepository : class, IRecordRepository
             where TRecordRepositoryImplementation : class, TRecordRepository
         {
-            var connection = options.Connection.ParseColonSeparated();
+            var connection = options.Connection.ParseSemiColonSeparated();
 
             services
                 .AddDbContext<TDbContext>(
@@ -153,8 +124,21 @@
 
             services
                 .AddRecordRepository<OrdersDbContext, IOrdersRecordRepository, OrdersRecordRepository>(orderClientOptions.Records)
-                .AddBlobRepository<IOrdersBlobRepository, OrdersBlobRepository>(orderClientOptions.Blobs);
+                .AddScoped<FileSystemBlobRepository>()
+                .AddScoped<AzureStorageBlobRepository>()
+                .AddBlobRepository<IOrdersBlobRepository>(orderClientOptions.Blobs);
 
+            //services
+            //    .AddScoped<FileSystemBlobRepository>()
+            //    .AddScoped<AzureStorageBlobRepository>()
+            //    .AddScoped<IOrdersBlobRepository, OrdersFileSystemBlobRepository>(
+            //        serviceProvider =>
+            //        {
+            //            var instance = serviceProvider.GetRequiredService<OrdersFileSystemBlobRepository>();
+            //            instance?.SetBasePath(orderClientOptions.Blobs.Connection);
+
+            //            return instance;
+            //        });
 
             //if (options.RecordRepositoryMode == RecordRepositoryMode.SqlLite)
             //{

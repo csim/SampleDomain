@@ -2,7 +2,7 @@
 {
     using SampleApp.Orders.Client.Data;
 
-    public class OrdersBlobRepository : FileSystemBlobRepository, IOrdersBlobRepository
+    public class OrdersAzureStorageBlobRepository : AzureStorageBlobRepository, IOrdersBlobRepository
     {
     }
 }

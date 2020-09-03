@@ -47,7 +47,7 @@
                     })
                 .Build();
 
-            InfrastructureModule.Initialize(host, configuration);
+            InfrastructureModule.Initialize(host);
 
             host.Run();
         }
