@@ -7,7 +7,7 @@
 
     public class OrderAuditRecord : RecordBase
     {
-        public OrderShadow Record { get; set; }
+        public OrderRecordShadow Record { get; set; }
 
         public RecordTransactionType TransactionType { get; set; }
 
@@ -21,7 +21,7 @@
 
     [Owned]
     [AutoMap(typeof(OrderRecord))]
-    public class OrderShadow
+    public class OrderRecordShadow
     {
         public DateTime? CreatedOn { get; set; }
 

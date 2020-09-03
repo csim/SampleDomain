@@ -24,9 +24,9 @@
 
         Task UpdateAsync<T>(T record) where T : RecordBase;
 
-        Task<IEnumerable<TRecord>> Query<TRecord>(Expression<Func<TRecord, bool>> predicate, int skip = 0, int take = 1000)
+        Task<IEnumerable<TRecord>> QueryAsync<TRecord>(Expression<Func<TRecord, bool>> predicate, int skip = 0, int take = 1000)
             where TRecord : RecordBase;
 
-        Task<IEnumerable<TRecord>> Query<TRecord>(int skip = 0, int take = 10000) where TRecord : RecordBase;
+        Task<IEnumerable<TRecord>> QueryAsync<TRecord>(int skip = 0, int take = 10000) where TRecord : RecordBase;
     }
 }

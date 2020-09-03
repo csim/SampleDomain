@@ -79,7 +79,7 @@ else
 
      private async Task LoadOrdersAsync()
      {
-          _orders = await OrdersRepo.Query<OrderRecord>();
+          _orders = await OrdersRepo.QueryAsync<OrderRecord>();
      }
 
 }

@@ -78,7 +78,7 @@
             }
         }
 
-        public async Task<IEnumerable<TRecord>> Query<TRecord>(Expression<Func<TRecord, bool>> predicate, int skip = 0, int take = 1000)
+        public async Task<IEnumerable<TRecord>> QueryAsync<TRecord>(Expression<Func<TRecord, bool>> predicate, int skip = 0, int take = 1000)
             where TRecord : RecordBase
         {
             return await AsQueryable<TRecord>()
@@ -88,9 +88,9 @@
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<TRecord>> Query<TRecord>(int skip = 0, int take = 10000) where TRecord : RecordBase
+        public async Task<IEnumerable<TRecord>> QueryAsync<TRecord>(int skip = 0, int take = 10000) where TRecord : RecordBase
         {
-            return await Query<TRecord>(_ => true, skip, take);
+            return await QueryAsync<TRecord>(_ => true, skip, take);
         }
 
         public virtual T Retrieve<T>(Guid id) where T : RecordBase
