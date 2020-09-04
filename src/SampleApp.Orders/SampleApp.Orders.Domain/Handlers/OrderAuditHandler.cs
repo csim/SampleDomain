@@ -24,9 +24,9 @@
         {
             _log.LogInformation($"Handle {message.GetType().Name} {message.Record.Id}");
 
-            var shadow = _mapper.Map<OrderRecordShadow>(message.Record);
+            var recordShadow = _mapper.Map<OrderRecordShadow>(message.Record);
 
-            var auditRecord = new OrderAuditRecord { Record = shadow, TransactionType = message.TransactionType, PartitionKey = "Customer1" };
+            var auditRecord = new OrderAuditRecord { Record = recordShadow, TransactionType = message.TransactionType, PartitionKey = message.Record.PartitionKey };
 
             await _repository.AddAsync(auditRecord);
         }
