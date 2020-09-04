@@ -74,8 +74,8 @@
         /// </summary>
         public static int Distance(this string source, string target)
         {
-            source = source ?? "";
-            target = target ?? "";
+            source ??= "";
+            target ??= "";
 
             var n = source.Length;
             var m = target.Length;
@@ -162,12 +162,12 @@
             return BitConverter.ToInt64(encrypted, 0);
         }
 
-        public static IDictionary<string, string> ParseSeparated(this string source)
+        public static IDictionary<string, string> ParseSeparatedValue(this string source)
         {
-            return source.ParseSeparated(";", "=");
+            return source.ParseSeparatedValue(";", "=");
         }
 
-        public static IDictionary<string, string> ParseSeparated(this string source, string keyDelimiter, string valueDelimiter)
+        public static IDictionary<string, string> ParseSeparatedValue(this string source, string keyDelimiter, string valueDelimiter)
         {
             return source
                 .Split(keyDelimiter)
